@@ -19,13 +19,26 @@ function PropertyCardComp({ viewMode, ...props }) {
       viewMode === 'grid' 
       ? 'w-full' // Full width in grid mode
       : 'w-full max-w-4xl mx-auto' // Centered with max width in list mode
-    } bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300`}>
-      <div className="h-[230px] relative" style={{ backgroundImage: `url(${props.img})`, backgroundSize: 'cover' }}>
+    } bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 relative`}>
+      <div className="absolute top-3 left-4 z-10">
+        <input
+          type="checkbox"
+          checked={props.isSelected}
+          onChange={() => props.onSelect(props.id)}
+          className="h-5 w-5 cursor-pointer accent-[#af0808]"
+        />
+      </div>
+      <div className="h-[230px] relative">
+        <img 
+          src={props.img} 
+          alt={props.name}
+          className="w-full h-full object-cover rounded-t-xl"
+        />
         <div className="absolute bottom-2 left-2 bg-white rounded-xl rounded-bl-sm px-3">
           <span className='text-sm'>{props.For}</span>
         </div>
-        <div className=" flex items-center justify-center hover:scale-105 transition-all duration-300 ease-in-out absolute top-2 right-2 bg-white rounded-sm rounded-tr-xl px-2 py-1">
-          <span className='text-sm '>₹ {props.Price}</span>
+        <div className="absolute top-2 right-2 bg-white rounded-sm rounded-tr-xl px-2 py-1">
+          <span className='text-sm'>₹ {props.Price}</span>
         </div>
       </div>
       <div className="p-4 flex flex-col gap-4">
@@ -46,15 +59,6 @@ function PropertyCardComp({ viewMode, ...props }) {
           <div className="flex gap-1"><img className='w-4' src={GarageIcon} alt="" /><span className='text-xs text-[#494949]'>{props.Garage}</span></div>
         </div>
         <hr className=' border-[#af08083f]' />
-
-        <div className="absolute top-3 left-4 z-10">
-          <input
-            type="checkbox"
-            checked={props.isSelected}
-            onChange={() => props.onSelect(props.id)}
-            className="h-5 w-5 cursor-pointer accent-[#af0808]"
-          />
-        </div>
 
       </div>
     </div>
