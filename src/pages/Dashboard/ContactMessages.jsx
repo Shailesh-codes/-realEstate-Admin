@@ -6,6 +6,7 @@ import ClosedEyeIcon from '../../../public/assests/ClosedEyeIcon.svg'
 import ArrowLeft from '../../../public/assests/ArrowLeft.svg'
 import ArrowRight from '../../../public/assests/ArrowLeft.svg'
 import { FaSort } from 'react-icons/fa';
+import api from "../../hooks/useApi";
 import axios from 'axios';
 
 const ContactMessages = () => {
@@ -21,7 +22,7 @@ const ContactMessages = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await axios.get('http://192.168.1.8:8080/api/v1/contact/getcontact', {
+        const response = await axios.get(`${api}/contact/getcontact`, {
           withCredentials: true
         });
         if (response.data.success) {

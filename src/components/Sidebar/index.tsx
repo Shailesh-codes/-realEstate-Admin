@@ -95,9 +95,9 @@ const Sidebar = ({
       )}
       <aside
         ref={sidebar}
-        className={`absolute left-0 top-0 z-[51] flex h-screen w-72.5 flex-col overflow-y-hidden bg-white duration-300 ease-linear dark:bg-boxdark ${
-          sidebarOpen ? 'lg:static' : '-translate-x-full'
-        } `}
+        className={`absolute left-0 top-0 z-[51] flex h-screen w-72.5 flex-col overflow-y-hidden bg-white duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
         <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-4.5 ">
           <NavLink to="/">
@@ -118,10 +118,8 @@ const Sidebar = ({
         <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear ">
           <nav className="flex flex-col gap-6  mt-5 py-4 px-4 lg:mt-0 lg:px-6">
             <button
-              onClick={() => { 
-                setSidebarOpen(false);
-              }}
-              className="absolute top-3 right-3 lg:hidden lg:left-60 text-black"
+              onClick={() => setSidebarOpen(false)}
+              className="absolute top-3 right-3 text-black lg:hidden"
             >
               <MdClose size={30} />
             </button>
