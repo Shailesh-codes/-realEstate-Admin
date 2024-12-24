@@ -30,7 +30,9 @@ function UpdateHeroSection() {
       );
       const formattedData = response.data.map((carousel) => ({
         ...carousel,
-        url: `data:image/jpeg;base64,${carousel.image}`,
+        url: carousel.image.startsWith('data:image') 
+          ? carousel.image 
+          : `data:image/jpeg;base64,${carousel.image}`,
       }));
       setCarousels(formattedData);
     } catch (error) {
