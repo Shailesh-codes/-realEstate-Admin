@@ -8,6 +8,7 @@ import ArrowRight from '../../../public/assests/ArrowLeft.svg'
 import { FaSort } from 'react-icons/fa';
 import api from "../../hooks/useApi";
 import axios from 'axios';
+import DeletePopup from '../../Authentication/deletePopUp';
 
 const ContactMessages = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,6 +19,8 @@ const ContactMessages = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const messagesPerPage = selectedEntries;
   const [messages, setMessages] = useState([]);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState(null);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -70,7 +73,7 @@ const ContactMessages = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`http://192.168.1.8:8080/api/v1/contact-messages/${id}`, {
+      const response = await axios.delete(`${api}/contact/deletecontact/${id}`, {
         withCredentials: true
       });
       if (response.data.success) {
@@ -81,6 +84,19 @@ const ContactMessages = () => {
       console.error('Error deleting message:', error);
     }
   }
+
+  const handleDeleteClick = (message) => {
+    setMessageToDelete(message);
+    setIsDeletePopupOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (messageToDelete) {
+      await handleDelete(messageToDelete.id);
+      setIsDeletePopupOpen(false);
+      setMessageToDelete(null);
+    }
+  };
 
   const renderPagination = () => {
     const startPage = Math.max(1, currentPage - 2);
@@ -193,7 +209,7 @@ const ContactMessages = () => {
                         <button className="p-2 rounded-full transition-colors" onClick={() => toggleMessageDetails(message.id)}>
                           <img className='w-5' src={expandedMessageId === message.id ? EyeIcon : ClosedEyeIcon} alt="" />
                         </button>
-                        <button className="p-2 rounded-full hover:bg-gray-100 transition-colors" onClick={() => handleDelete(message.id)}>
+                        <button className="p-2 rounded-full hover:bg-gray-100 transition-colors" onClick={() => handleDeleteClick(message)}>
                           <img className='w-5' src={DeleteIcon} alt="" />
                         </button>
                       </div>
@@ -225,6 +241,13 @@ const ContactMessages = () => {
 
       {/* Pagination */}
       {renderPagination()}
+
+      <DeletePopup
+        isOpen={isDeletePopupOpen}
+        onClose={() => setIsDeletePopupOpen(false)}
+        onDelete={handleDeleteConfirm}
+        itemName="message"
+      />
     </div>
   );
 };

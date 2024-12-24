@@ -7,6 +7,7 @@ import Lottie from 'react-lottie';
 import signInlottie from '../../public/Lotties/SignInLottieAnimation2.json';
 import api from '../hooks/useApi';
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 
 const SignIn = ({ userType, setUserType }) => {
   const [passToggle, setPassToggle] = useState(false);
@@ -37,55 +38,60 @@ const SignIn = ({ userType, setUserType }) => {
     e.preventDefault();
     setError('');
 
-    // Basic form validation
-    if (!email || !password) {
+    // Enhanced form validation
+    if (!email.trim() || !password.trim()) {
       setError('Please enter both email and password.');
       return;
     }
 
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
     try {
-      const response = await fetch(`${api}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        credentials: 'include', // This is correct for handling cookies
-        body: JSON.stringify({
-          email: email.trim(),
-          password: password,
-          role: userType || 'employee', // Default to employee if no userType selected
+      const response = await axios.post(
+        `${api}/auth/login`,
+        {
+          email,
+          password,
+          role: userType,
           rememberMe: rememberMe,
-        }),
-      });
+        },
+        {
+          withCredentials: true,
+        },
+      );
 
-      const data = await response.json();
-      console.log('Login response:', data);
-
-      if (response.ok && data.success) {
-        const userData = {
-          name: data.user.name,
-          email: data.user.email,
-          role: data.user.role,
-          id: data.user.id,
-        };
-        
-        console.log('Setting user data:', userData);
-        setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
-
-        // Navigate to the page they were trying to access, or dashboard as default
-        const from = location.state?.from?.pathname || "/dashboard";
-        navigate(from, { replace: true });
-      } else {
-        setError(data.message || 'Invalid credentials. Please try again.');
+      if (response.data.success) {
+        setUser(response.data.user);
+        navigate('/dashboard');
       }
     } catch (error) {
-      console.error('Error during sign in:', error);
-      setError(
-        error.message ||
-          'Network error. Please check your connection and try again.',
-      );
+      console.error('Login error:', error);
+      if (error.response) {
+        // Handle specific error responses from server
+        switch (error.response.status) {
+          case 401:
+            setError('Invalid email or password.');
+            break;
+          case 403:
+            setError('Access denied. Please check your credentials.');
+            break;
+          case 404:
+            setError('User not found.');
+            break;
+          default:
+            setError('An error occurred during sign in. Please try again.');
+        }
+      } else if (error.request) {
+        // Network error
+        setError('Unable to connect to the server. Please check your internet connection.');
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
     }
   };
 
@@ -226,9 +232,9 @@ const SignIn = ({ userType, setUserType }) => {
 
                   <div className="flex justify-between mb-2">
                     <div className="flex gap-2">
-                      <input 
+                      <input
                         type="checkbox"
-                        className="cursor-pointer" 
+                        className="cursor-pointer"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
                       />

@@ -1,4 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import axios from 'axios';
+import api from "../hooks/useApi";
+
+
 
 interface AuthContextType {
     user: {
@@ -25,12 +29,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if (user) {
             localStorage.setItem('user', JSON.stringify(user));
+            // Set axios default header
+            axios.defaults.withCredentials = true;
+        } else {
+            localStorage.removeItem('user');
         }
     }, [user]);
 
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('user');
+    const logout = async () => {
+        try {
+            await axios.post(`${api}/auth/logout`);
+            setUser(null);
+            localStorage.removeItem('user');
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     };
 
     return (

@@ -12,12 +12,15 @@ import { FaBath } from 'react-icons/fa';
 import '../../../../public/Styles/Global.css';
 import EditCarouselModel from '../EditCarouselModel';
 import api from '../../../hooks/useApi';
+import DeletePopup from '../../../Authentication/deletePopUp';
 
 function UpdateHeroSection() {
   const [EditModel, setEditModel] = useState(false);
   const [selectedCarousel, setSelectedCarousel] = useState(0);
 
   const [carousels, setCarousels] = useState([]);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [carouselToDelete, setCarouselToDelete] = useState(null);
 
   useEffect(() => {
     fetchCarousels();
@@ -81,19 +84,27 @@ function UpdateHeroSection() {
   }
 
   async function HandleDeleteClick(e, index) {
+    setCarouselToDelete(index);
+    setShowDeletePopup(true);
+  }
+
+  const handleConfirmDelete = async () => {
     try {
-      const carouselId = carousels[index].id;
+      const carouselId = carousels[carouselToDelete].id;
       const response = await axios.delete(
         `${api}/hero-carousel/carousels/${carouselId}`,
       );
 
       if (response.status === 200) {
-        setCarousels((preVal) => preVal.filter((_, i) => i !== index));
+        setCarousels((preVal) => preVal.filter((_, i) => i !== carouselToDelete));
       }
     } catch (error) {
       console.error('Error deleting carousel:', error);
+    } finally {
+      setShowDeletePopup(false);
+      setCarouselToDelete(null);
     }
-  }
+  };
 
   async function handleImageChange(e, index) {
     const file = e.target.files[0];
@@ -290,6 +301,12 @@ function UpdateHeroSection() {
           onUpdate={handleCarouselUpdate}
         />
       )}
+      <DeletePopup
+        isOpen={showDeletePopup}
+        onClose={() => setShowDeletePopup(false)}
+        onDelete={handleConfirmDelete}
+        itemName="property"
+      />
     </div>
   );
 }

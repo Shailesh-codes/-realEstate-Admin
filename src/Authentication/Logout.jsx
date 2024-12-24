@@ -10,7 +10,7 @@ const Logout = ({ isModalOpen, setIsModalOpen }) => {
 
   function HandleLogoutFunction() {
     logout();
-    navigate('/signin');
+    navigate('/');
   }
 
   function CancelClick() {
