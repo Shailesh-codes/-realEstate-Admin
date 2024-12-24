@@ -9,8 +9,9 @@ const Logout = ({ isModalOpen, setIsModalOpen }) => {
   const { logout } = useAuth();
 
   function HandleLogoutFunction() {
+    setIsModalOpen(false);
     logout();
-    navigate('/signin');
+    navigate('/');
   }
 
   function CancelClick() {

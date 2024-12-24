@@ -353,7 +353,7 @@ function PropertiesPage() {
             <div className="px-2.5 lg:px-6 py-8 md:py-12">
                 <div className={`${
                     viewMode === 'grid' 
-                    ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+                    ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
                     : 'flex flex-col gap-6'
                 }`}>
                     {loading ? (

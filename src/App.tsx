@@ -66,7 +66,7 @@ function App() {
     if (!isAuthenticated) {
       // Redirect them to the /signin page, but save the current location they were
       // trying to go to when they were redirected.
-      return <Navigate to="/signin" state={{ from: location }} replace />;
+      return <Navigate to="/" state={{ from: location }} replace />;
     }
 
     if (!user || !allowedRoles.includes(user.role)) {
