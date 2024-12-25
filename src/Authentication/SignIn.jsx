@@ -9,6 +9,19 @@ import api from '../hooks/useApi';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
+const styles = `
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+`;
+
 const SignIn = ({ userType, setUserType }) => {
   const [passToggle, setPassToggle] = useState(false);
   const [email, setEmail] = useState('');
@@ -18,6 +31,8 @@ const SignIn = ({ userType, setUserType }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { setUser } = useAuth();
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   const defaultOptions = {
     loop: true,
@@ -37,17 +52,25 @@ const SignIn = ({ userType, setUserType }) => {
   const handleSignIn = async (e) => {
     e.preventDefault();
     setError('');
+    setEmailError('');
+    setPasswordError('');
 
-    // Enhanced form validation
-    if (!email.trim() || !password.trim()) {
+    if (!email.trim() && !password.trim()) {
       setError('Please enter both email and password.');
       return;
     }
+    if (!email.trim()) {
+      setEmailError('Email is required');
+      return;
+    }
+    if (!password.trim()) {
+      setPasswordError('Password is required');
+      return;
+    }
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address.');
+      setEmailError('Please enter a valid email address');
       return;
     }
 
@@ -62,7 +85,7 @@ const SignIn = ({ userType, setUserType }) => {
         },
         {
           withCredentials: true,
-        },
+        }
       );
 
       if (response.data.success) {
@@ -72,22 +95,33 @@ const SignIn = ({ userType, setUserType }) => {
     } catch (error) {
       console.error('Login error:', error);
       if (error.response) {
-        // Handle specific error responses from server
         switch (error.response.status) {
           case 401:
-            setError('Invalid email or password.');
+            if (error.response.data.field === 'email') {
+              setEmailError('Email not registered');
+            } else if (error.response.data.field === 'password') {
+              setPasswordError('Incorrect password');
+            } else {
+              setError('Invalid credentials');
+            }
             break;
           case 403:
-            setError('Access denied. Please check your credentials.');
+            setError(`Access denied. ${userType} access not allowed.`);
             break;
           case 404:
-            setError('User not found.');
+            setEmailError('User not found');
+            break;
+          case 422:
+            if (error.response.data.errors) {
+              const { email, password } = error.response.data.errors;
+              if (email) setEmailError(email);
+              if (password) setPasswordError(password);
+            }
             break;
           default:
             setError('An error occurred during sign in. Please try again.');
         }
       } else if (error.request) {
-        // Network error
         setError('Unable to connect to the server. Please check your internet connection.');
       } else {
         setError('An unexpected error occurred. Please try again.');
@@ -95,8 +129,13 @@ const SignIn = ({ userType, setUserType }) => {
     }
   };
 
+  const handleRoleSelection = (role) => {
+    setUserType(role);
+  }
+
   return (
     <>
+      <style>{styles}</style>
       <div className="fixed top-0 right-0 bottom-0 left-0 z-9999 rounded-sm flex items-center justify-center h-[100vh] border border-stroke bg-white shadow-default">
         <div className="relative flex flex-wrap items-center justify-end w-full mx-2 sm:w-[70%]">
           <div className="absolute left-0 z-1 animate-figgle  w-full xl:flex xl:w-1/2 h-125 flex items-center justify-center border border-[#c7dbf4] shadow-custom">
@@ -135,7 +174,10 @@ const SignIn = ({ userType, setUserType }) => {
                 </div>
 
                 {error && (
-                  <div className="text-center mb-4 p-3 text-sm text-red-500 bg-red-100 rounded">
+                  <div className="text-center mb-4 p-4 text-sm text-red-500 bg-gradient-to-r from-red-50 to-transparent rounded-lg border border-red-100 shadow-sm animate-[fadeIn_0.3s_ease-in-out] flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                    </svg>
                     {error}
                   </div>
                 )}
@@ -145,7 +187,7 @@ const SignIn = ({ userType, setUserType }) => {
                   <div className="mb-7">
                     <div className="flex gap-4">
                       <div
-                        onClick={() => setUserType('admin')}
+                        onClick={() => handleRoleSelection('admin')}
                         className={`flex-1 cursor-pointer rounded-lg border p-2 text-center ${
                           userType === 'admin'
                             ? 'border-[#0b2c3d] bg-[#0b2c3d] text-white'
@@ -155,7 +197,7 @@ const SignIn = ({ userType, setUserType }) => {
                         Admin
                       </div>
                       <div
-                        onClick={() => setUserType('employee')}
+                        onClick={() => handleRoleSelection('employee')}
                         className={`flex-1 cursor-pointer rounded-lg border p-2 text-center ${
                           userType === 'employee'
                             ? 'border-[#0b2c3d] bg-[#0b2c3d] text-white'
@@ -167,66 +209,64 @@ const SignIn = ({ userType, setUserType }) => {
                     </div>
                   </div>
                   <div className="mb-4">
-                    <label className="mb-2.5 block font-medium text-[#0b2c3d]">
+                    <label className="mb-2.5 block font-medium text-[#0b2c3d] transition-all">
                       Email
                     </label>
                     <div className="relative">
                       <input
                         type="email"
                         placeholder="Enter your email"
-                        className="w-full rounded-lg border border-[#c7dbf4] bg-transparent py-4 pl-6 pr-10 text-[#0b2c3d] outline-none focus:border-[#b31a1b]"
+                        className={`w-full rounded-lg border ${
+                          emailError ? 'border-red-300 animate-[shake_0.5s_ease-in-out]' : 'border-[#c7dbf4]'
+                        } bg-transparent py-4 pl-6 pr-10 text-[#0b2c3d] outline-none focus:border-[#b31a1b] transition-all duration-300 hover:border-[#b31a1b]/50`}
                         value={email}
-                        onChange={(event) => {
-                          setEmail(event.target.value);
-                        }}
+                        onChange={(event) => setEmail(event.target.value)}
                       />
-                      <span className="absolute right-4 top-4">
-                        <svg
-                          className="fill-current"
-                          width="22"
-                          height="22"
-                          viewBox="0 0 22 22"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g opacity="0.5">
-                            <path
-                              d="M19.2516 3.30005H2.75156C1.58281 3.30005 0.585938 4.26255 0.585938 5.46567V16.6032C0.585938 17.7719 1.54844 18.7688 2.75156 18.7688H19.2516C20.4203 18.7688 21.4172 17.8063 21.4172 16.6032V5.4313C21.4172 4.26255 20.4203 3.30005 19.2516 3.30005ZM19.2516 4.84692C19.2859 4.84692 19.3203 4.84692 19.3547 4.84692L11.0016 10.2094L2.64844 4.84692C2.68281 4.84692 2.71719 4.84692 2.75156 4.84692H19.2516ZM19.2516 17.1532H2.75156C2.40781 17.1532 2.13281 16.8782 2.13281 16.5344V6.35942L10.1766 11.5157C10.4172 11.6875 10.6922 11.7563 10.9672 11.7563C11.2422 11.7563 11.5172 11.6875 11.7578 11.5157L19.8016 6.35942V16.5688C19.8703 16.9125 19.5953 17.1532 19.2516 17.1532Z"
-                              fill=""
-                            />
-                          </g>
-                        </svg>
-                      </span>
+                      {emailError && (
+                        <div className="absolute -bottom-6 left-0 text-sm text-red-500 flex items-center gap-1 animate-[fadeIn_0.3s_ease-in-out]">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+                          </svg>
+                          {emailError}
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   <div className="mb-6">
-                    <label className="mb-2.5 block font-medium text-[#0b2c3d]">
+                    <label className="mb-2.5 block font-medium text-[#0b2c3d] transition-all">
                       Password
                     </label>
                     <div className="relative">
                       <input
                         type={passToggle ? 'text' : 'password'}
                         placeholder="Enter your password"
-                        className="w-full rounded-lg border border-[#c7dbf4] bg-transparent py-4 pl-6 pr-10 text-[#0b2c3d] outline-none focus:border-[#b31a1b]"
+                        className={`w-full rounded-lg border ${
+                          passwordError ? 'border-red-300 animate-[shake_0.5s_ease-in-out]' : 'border-[#c7dbf4]'
+                        } bg-transparent py-4 pl-6 pr-10 text-[#0b2c3d] outline-none focus:border-[#b31a1b] transition-all duration-300 hover:border-[#b31a1b]/50`}
                         value={password}
-                        onChange={(event) => {
-                          setPassword(event.target.value);
-                        }}
+                        onChange={(event) => setPassword(event.target.value)}
                       />
-
-                      <span
-                        onClick={() => {
-                          setPassToggle(!passToggle);
-                        }}
-                        className="absolute right-4 top-4 cursor-pointer"
+                      {passwordError && (
+                        <div className="absolute -bottom-6 left-0 text-sm text-red-500 flex items-center gap-1 animate-[fadeIn_0.3s_ease-in-out]">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+                          </svg>
+                          {passwordError}
+                        </div>
+                      )}
+                      
+                      <button
+                        type="button"
+                        onClick={() => setPassToggle(!passToggle)}
+                        className="absolute right-4 top-4 cursor-pointer transition-transform hover:scale-110"
                       >
                         {passToggle ? (
-                          <img src={EyeOpenIcon} alt="open" />
+                          <img src={EyeOpenIcon} alt="open" className="opacity-60 hover:opacity-100 transition-opacity" />
                         ) : (
-                          <img src={EyeCloseIcon} alt="close" />
+                          <img src={EyeCloseIcon} alt="close" className="opacity-60 hover:opacity-100 transition-opacity" />
                         )}
-                      </span>
+                      </button>
                     </div>
                   </div>
 
@@ -253,9 +293,8 @@ const SignIn = ({ userType, setUserType }) => {
                   <div className="flex items-center justify-center gap-4">
                     <button
                       type="submit"
-                      className=" w-[60%] flex items-center justify-center gap-3.5 rounded-lg border border-[#c7dbf4] bg-white p-3 hover:bg-gray-50"
+                      className="w-[60%] flex items-center justify-center gap-3.5 rounded-lg border border-[#c7dbf4] bg-white p-3 transition-all duration-300 hover:bg-[#0b2c3d] hover:text-white hover:border-[#0b2c3d] transform hover:-translate-y-1 hover:shadow-lg"
                     >
-                      <span></span>
                       Sign In
                     </button>
                   </div>

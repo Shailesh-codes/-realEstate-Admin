@@ -16,6 +16,9 @@ import toggleoff from '../../../public/assests/toggle-off-stroke-rounded.svg';
 import toggleon from '../../../public/assests/toggle-on-stroke-rounded.svg';
 import axios from 'axios';
 import api from '../../hooks/useApi'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 
 const AddEmployees = () => {
   const [name, setName] = useState('');
@@ -29,13 +32,13 @@ const AddEmployees = () => {
 
   const handleAddEmployee = async (e) => {
     e.preventDefault();
-    
+
     // Add validation
     if (!name || !email || !password) {
       alert('Please fill in all required fields');
       return;
     }
-    
+
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
       alert('Please enter a valid email address');
       return;
@@ -55,13 +58,13 @@ const AddEmployees = () => {
       if (response.data.success) {
         // Add the new employee to the list immediately
         setEmployees(prev => [...prev, response.data.employee]);
-        
+
         // Clear form
         setName('');
         setPhone('');
         setEmail('');
         setPassword('');
-        
+
         // Show success message
         alert('Employee added successfully!');
       }
@@ -93,19 +96,22 @@ const AddEmployees = () => {
   const toggleEmployeeStatus = async (employeeId, currentStatus) => {
     console.log('Attempting to toggle status for employee:', employeeId);
     console.log('Current status:', currentStatus);
-    
+
     try {
       const response = await axios.patch(`${api}/employees/toggle-status/${employeeId}`);
       console.log('Server response:', response.data);
-      
+
       if (response.data.success) {
-        setEmployees(prevEmployees => 
-          prevEmployees.map(emp => 
-            emp.id === employeeId 
+        setEmployees(prevEmployees =>
+          prevEmployees.map(emp =>
+            emp.id === employeeId
               ? { ...emp, isActive: !emp.isActive }  // Toggle the current status
               : emp
           )
         );
+        !currentStatus
+          ? toast.success(`Employee activated successfully`)
+          : toast.error(`Employee deactivated successfully`);
       }
     } catch (error) {
       console.log('Full error object:', error);
@@ -121,6 +127,7 @@ const AddEmployees = () => {
 
   return (
     <>
+      <ToastContainer />
       <div className="flex flex-col gap-14 lg:gap-0">
         <div className="flex justify-center items-center py-4">
           <div className="relative">
@@ -297,7 +304,7 @@ const AddEmployees = () => {
                   <th className="px-4 py-3 text-left">Employees Name</th>
                   <th className="px-4 py-3 text-left">Employees Contact No.</th>
                   <th className="px-4 py-3 text-left">Employees Email</th>
-                  <th className="px-4 py-3 text-left">Status</th>
+                  <th className="px-4 py-3 text-center">Status</th>
                 </tr>
               </thead>
               <tbody className="text-gray-600">
@@ -312,21 +319,27 @@ const AddEmployees = () => {
                     <td className="px-4 py-3">{employee.email}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-center items-center">
-                        <div className="checkbox-wrapper-51">
-                          <input
-                            id={`cbx-${employee.id}`}
-                            type="checkbox"
-                            checked={employee.isActive}
-                            onChange={() => toggleEmployeeStatus(employee.id, employee.isActive)}
-                            className="toggle-checkbox"
-                          />
-                          <label className="toggle" htmlFor={`cbx-${employee.id}`}>
-                            <span>
-                              <svg viewBox="0 0 10 10" height="10px" width="10px">
-                                <path d="M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z"></path>
-                              </svg>
-                            </span>
-                          </label>
+                        <div className="flex items-center gap-3">
+                          <div className="relative inline-block w-12 h-6">
+                            <input
+                              id={`toggle-${employee.id}`}
+                              type="checkbox"
+                              checked={employee.isActive}
+                              onChange={() => toggleEmployeeStatus(employee.id, employee.isActive)}
+                              className="peer opacity-0 w-0 h-0"
+                            />
+                            <label
+                              htmlFor={`toggle-${employee.id}`}
+                              className={`absolute cursor-pointer inset-0 rounded-full transition-all duration-300 
+            ${employee.isActive ? 'bg-green-500' : 'bg-gray-300'}
+            before:content-[''] before:absolute before:w-4 before:h-4 before:bottom-1 before:left-1 
+            before:rounded-full before:bg-white before:transition-all before:duration-300
+            peer-checked:before:translate-x-6`}
+                            />
+                          </div>
+                          <span className={`text-sm font-medium ${employee.isActive ? 'text-green-500' : 'text-gray-500'}`}>
+                            {employee.isActive ? 'Active' : 'Inactive'}
+                          </span>
                         </div>
                       </div>
                     </td>

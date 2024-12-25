@@ -7,9 +7,6 @@ import curve from '../../../public/assests/images/curve.png';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-
-
-
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
@@ -18,8 +15,8 @@ const Header = (props: {
   const { user } = useAuth();
 
   return (
-    <header  className="sticky top-0 z-999 flex w-full bg-white">
-      <div className=" rounded-br-full w-4 h-4 absolute left-0  -bottom-4">
+    <header className="sticky top-0 z-999 flex w-full bg-white">
+      <div className="rounded-br-full w-4 h-4 absolute left-0 -bottom-4">
         <img src={curve} alt="" />
       </div>
       <div className="flex flex-grow items-center justify-between px-4 py-4 md:px-6 2xl:px-11">
@@ -31,9 +28,7 @@ const Header = (props: {
               e.stopPropagation();
               props.setSidebarOpen(!props.sidebarOpen);
             }}
-            className={`z-99999 block rounded-sm border-stroke bg-white p-1.5 dark:border-strokedark dark:bg-boxdark ${
-              props.sidebarOpen ? 'lg:block hidden' : ''
-            }`}
+            className={`z-99999 block rounded-sm border-stroke bg-white p-1.5 dark:border-strokedark dark:bg-boxdark lg:hidden`}
           >
             <span className="relative block h-5.5 w-5.5 cursor-pointer">
               <span className="du-block absolute right-0 h-full w-full">
@@ -69,17 +64,17 @@ const Header = (props: {
           </button>
           {/* <!-- Hamburger Toggle BTN --> */}
 
-          {!props.sidebarOpen && <Link className="block flex-shrink-0 lg:hidden" to="/">
-            <img className='w-16' src={LogoIcon} alt="Logo" />
-          </Link>}
+          {!props.sidebarOpen && (
+            <Link className="block flex-shrink-0 lg:hidden" to="/">
+              <img className="w-16" src={LogoIcon} alt="Logo" />
+            </Link>
+          )}
         </div>
 
         <div className="hidden sm:block">
           <form action="https://formbold.com/s/unique_form_id" method="POST">
             <div className="relative">
-            <div className="md:flex hidden">
-         
-        </div>
+              <div className="md:flex hidden"></div>
             </div>
           </form>
         </div>
@@ -89,7 +84,6 @@ const Header = (props: {
             {/* <!-- Notification Menu Area --> */}
             <DropdownNotification />
             {/* <!-- Notification Menu Area --> */}
-           
           </ul>
 
           {/* <!-- User Area --> */}

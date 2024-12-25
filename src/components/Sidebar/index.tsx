@@ -14,6 +14,7 @@ import { MdClose } from 'react-icons/md';
 import AddEmployeeIcon from '../../../public/assests/SVGComponents/AddEmployeeIcon';
 import NotificationSVGComponent from '../../../public/assests/SVGComponents/NotificationSVGComponent';
 import ResetPasswordSVGComponent from '../../../public/assests/SVGComponents/ResetPasswordSVGComponent';
+import { useAuth } from '../../context/AuthContext';
 
 type UserType = 'admin' | 'employee';
 
@@ -32,6 +33,7 @@ const Sidebar = ({
 }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
+  const { user } = useAuth();
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
@@ -154,7 +156,7 @@ const Sidebar = ({
                   </NavLink>
                 </li>
 
-                {userType === 'admin' && (
+                {user?.role === 'admin' && (
                   <li>
                     <NavLink
                       to="/contactpage"
@@ -199,7 +201,7 @@ const Sidebar = ({
                     </div>
                   </NavLink>
                 </li>
-                {userType === 'admin' && (
+                {user?.role === 'admin' && (
                   <li>
                     <NavLink
                       to="/updatecontent"
@@ -226,7 +228,7 @@ const Sidebar = ({
                   </li>
                 )}
 
-                {userType === 'admin' && (
+                {user?.role === 'admin' && (
                   <li>
                     <NavLink
                       to="/addemployees"
@@ -251,7 +253,7 @@ const Sidebar = ({
                   </li>
                 )}
 
-                {userType === 'admin' && (
+                {/* {userType === 'admin' && (
                   <li>
                     <NavLink
                       to="/notifications"
@@ -276,7 +278,7 @@ const Sidebar = ({
                       </div>
                     </NavLink>
                   </li>
-                )}
+                )} */}
               </ul>
             </div>
 
@@ -285,7 +287,7 @@ const Sidebar = ({
                 OTHERS
               </h3>
 
-              {userType === 'employee' && (
+              {user?.role === 'employee' && (
                 <NavLink
                   to="/settings"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium bg-[#e8ebed8a] text-[#0b2c3d] duration-300 ease-in-out hover:bg-graydark ${

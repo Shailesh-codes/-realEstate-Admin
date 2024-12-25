@@ -32,10 +32,11 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
-  const [userType, setUserType] = useState<string>('admin'); // 'admin' or 'employee'
   const { pathname } = useLocation();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [PDFIsOpen, setPDFIsOpen] = useState<boolean>(false);
+  const { user } = useAuth();
+  const [userType, setUserType] = useState<string>('employee');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -66,7 +67,7 @@ function App() {
     if (!isAuthenticated) {
       // Redirect them to the /signin page, but save the current location they were
       // trying to go to when they were redirected.
-      return <Navigate to="/signin" state={{ from: location }} replace />;
+      return <Navigate to="/" state={{ from: location }} replace />;
     }
 
     if (!user || !allowedRoles.includes(user.role)) {
@@ -80,16 +81,44 @@ function App() {
 
   return (
     <AuthProvider>
-      {['/signIn', '/forgotpass', '/', '/propertiesdetails', '/set-new-password'].includes(pathname) ? (
+      {['/', '/signIn', '/forgotpass', '/resetpassword', '/propertiesdetails', '/set-new-password'].includes(pathname.split('?')[0]) ? (
         <Routes>
-          <Route index path='/' element={<> <PageTitle title="Sign In | Anmol Real Estate" /><SignIn userType={userType} setUserType={setUserType} /> </>} />
-          <Route path='/signIn' element={<> <PageTitle title="Sign In | Anmol Real Estate" /><SignIn userType={userType} setUserType={setUserType} /> </>} />
+          <Route index path='/' element={
+            <> 
+              <PageTitle title="Sign In | Anmol Real Estate" />
+              <SignIn 
+                userType={userType} 
+                setUserType={setUserType}
+              /> 
+            </>
+          } />
+          <Route path='/signIn' element={
+            <> 
+              <PageTitle title="Sign In | Anmol Real Estate" />
+              <SignIn 
+                userType={userType} 
+                setUserType={setUserType}
+              /> 
+            </>
+          } />
           <Route path='/resetpassword' element={<> <PageTitle title="Reset Password | Anmol Real Estate" /><ResetPassword /> </>} />
+          <Route 
+            path='/set-new-password' 
+            element={
+              <> 
+                <PageTitle title="Set New Password | Anmol Real Estate" />
+                <SetNewPassword />
+              </>
+            } 
+          />
           <Route path='/propertiesdetails' element={<><PageTitle title="Property Details | Anmol Real Estate" /><PropertiesDetails PDFIsOpen={PDFIsOpen} setPDFIsOpen={setPDFIsOpen} property={Property} /></>} />
-          <Route path='/set-new-password' element={<><PageTitle title="Set New Password | Anmol Real Estate" /><SetNewPassword /></>} />
         </Routes>
       ) : (
-        <DefaultLayout userType={userType} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
+        <DefaultLayout 
+          userType={user?.role || 'employee'} 
+          isModalOpen={isModalOpen} 
+          setIsModalOpen={setIsModalOpen}
+        >
           <Routes>
             {/* Routes accessible by both admin and employee */}
             <Route path='/dashboard' element={

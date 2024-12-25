@@ -2,6 +2,10 @@ import { useContext, useState, useEffect } from 'react';
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import userThree from '../images/user/user-03.png';
 import api from '../hooks/useApi';
+import { useAuth } from '../context/AuthContext';
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 
 interface EmployeeData {
   fullName: string;
@@ -13,10 +17,11 @@ interface EmployeeData {
 }
 
 const Settings = () => {
+  const { user } = useAuth();
   const [employeeData, setEmployeeData] = useState<EmployeeData>({
-    fullName: '',
+    fullName: user?.name || '',
     phoneNumber: '',
-    email: '',
+    email: user?.email || '',
     username: '',
     bio: '',
   });
@@ -29,9 +34,8 @@ const Settings = () => {
   // Fetch employee data
   useEffect(() => {
     const fetchEmployeeData = async () => {
-      // Get employeeId from localStorage if not in state
-      const storedEmployeeId = localStorage.getItem('employeeId');
-      
+      const storedEmployeeId = user?.id || localStorage.getItem('employeeId');
+
       if (storedEmployeeId) {
         try {
           const response = await fetch(`${api}/employee-info/${storedEmployeeId}`);
@@ -40,28 +44,25 @@ const Settings = () => {
           }
           const data = await response.json();
           setEmployeeData(data);
-          setEmployeeId(storedEmployeeId); // Ensure state is updated
+          setEmployeeId(storedEmployeeId);
         } catch (error) {
           console.error('Error fetching employee data:', error);
-          alert('Failed to load employee data');
+          toast.error('Failed to load employee data');
         }
       }
     };
 
     fetchEmployeeData();
-  }, []); // Run only on component mount
+  }, [user]);
 
   // Modify handleSubmit to store employeeId
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    
-
     try {
       let response;
       if (!employeeId) {
-        // Create new employee
         response = await fetch(`${api}/employee-info`, {
           method: 'POST',
           headers: {
@@ -70,7 +71,6 @@ const Settings = () => {
           body: JSON.stringify(employeeData),
         });
       } else {
-        // Update existing employee
         response = await fetch(`${api}/employee-info/${employeeId}`, {
           method: 'PUT',
           headers: {
@@ -87,17 +87,16 @@ const Settings = () => {
       }
 
       if (!employeeId) {
-        // If this was a creation, store the new ID
         const newEmployeeId = data.employee.id;
         setEmployeeId(newEmployeeId);
-        localStorage.setItem('employeeId', newEmployeeId); // Store in localStorage
+        localStorage.setItem('employeeId', newEmployeeId);
       }
-      
+
       setEmployeeData(data.employee);
-      alert(employeeId ? 'Profile updated successfully' : 'Employee Information created successfully');
+      toast.success(employeeId ? 'Profile updated successfully' : 'Employee Information created successfully');
     } catch (error) {
       console.error('Error:', error);
-      alert(error instanceof Error ? error.message : 'Operation failed');
+      toast.error(error instanceof Error ? error.message : 'Operation failed');
     } finally {
       setLoading(false);
     }
@@ -113,7 +112,7 @@ const Settings = () => {
   // Handle photo upload
   const handleFileUpload = async (file: File) => {
     if (!employeeId) {
-      alert('Please save employee information first');
+      toast.error('Please save employee information first');
       return;
     }
 
@@ -145,13 +144,13 @@ const Settings = () => {
           ...prev,
           profilePhoto: data.profilePhotoUrl
         }));
-        alert('Photo updated successfully');
+        toast.success('Photo updated successfully');
       } else {
         throw new Error('No photo URL received from server');
       }
     } catch (error) {
       console.error('Detailed upload error:', error);
-      alert(error instanceof Error ? error.message : 'Failed to upload photo');
+      toast.error(error instanceof Error ? error.message : 'Failed to upload photo');
     }
   };
 
@@ -170,10 +169,10 @@ const Settings = () => {
       if (!response.ok) throw new Error('Failed to delete photo');
 
       setEmployeeData(prev => ({ ...prev, profilePhoto: undefined }));
-      alert('Photo deleted successfully');
+      toast.success('Photo deleted successfully');
     } catch (error) {
       console.error('Error deleting photo:', error);
-      alert('Failed to delete photo');
+      toast.error('Failed to delete photo');
     }
   };
 
@@ -227,7 +226,7 @@ const Settings = () => {
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.currentTarget.classList.remove('border-primary');
-    
+
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       const file = files[0];
@@ -241,6 +240,7 @@ const Settings = () => {
 
   return (
     <>
+      <ToastContainer />
       <div className="mx-auto max-w-270">
         <Breadcrumb pageName="Settings" />
 
@@ -469,11 +469,11 @@ const Settings = () => {
                     <div className="h-14 w-14 rounded-full">
                       {employeeData.profilePhoto ? (
                         <img
-                          src={typeof employeeData.profilePhoto === 'string' 
-                            ? employeeData.profilePhoto 
-                            : (employeeData.profilePhoto instanceof Blob 
-                                ? URL.createObjectURL(employeeData.profilePhoto)
-                                : userThree)}
+                          src={typeof employeeData.profilePhoto === 'string'
+                            ? employeeData.profilePhoto
+                            : (employeeData.profilePhoto instanceof Blob
+                              ? URL.createObjectURL(employeeData.profilePhoto)
+                              : userThree)}
                           alt="User"
                           className="h-full w-full object-cover rounded-full"
                         />

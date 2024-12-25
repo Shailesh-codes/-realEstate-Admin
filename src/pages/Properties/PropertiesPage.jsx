@@ -191,7 +191,7 @@ function PropertiesPage() {
 
     return (
         <div>
-            <div className="w-full h-72 mt-20 relative flex items-center justify-center"
+            <div className="w-full h-48 sm:h-72 mt-16 sm:mt-20 relative flex items-center justify-center"
                 style={{
                     backgroundImage: `url(${"https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=2084&auto=format&fit=crop"})`,
                     backgroundSize: "cover",
@@ -207,24 +207,24 @@ function PropertiesPage() {
             </div>
 
             <div className="bg-white shadow-sm sticky top-0 z-50">
-                <div className="container mx-auto px-4 py-6">
-                    <div className="flex flex-col md:flex-row gap-4 items-center mb-6">
-                        <div className="relative flex-grow">
+                <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+                    <div className="flex flex-col gap-4">
+                        <div className="relative w-full">
                             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                             <input 
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search by location or property name..."
-                                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-[#af0808] focus:ring-1 focus:ring-[#af0808]"
+                                placeholder="Search properties..."
+                                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-[#af0808]"
                             />
                         </div>
 
-                        <div className="flex flex-wrap gap-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                             <select
                                 value={SelectedProp}
                                 onChange={(e) => setSelectedProp(e.target.value)}
-                                className="px-4 py-2.5 border border-gray-200 rounded-lg appearance-none bg-white hover:bg-gray-50 focus:outline-none focus:border-[#af0808]"
+                                className="px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-200 rounded-lg text-sm sm:text-base"
                             >
                                 <option value="All">Property Type</option>
                                 <option value="buy">For Buy</option>
@@ -235,7 +235,7 @@ function PropertiesPage() {
                             <select
                                 value={priceRange}
                                 onChange={(e) => setPriceRange(e.target.value)}
-                                className="px-4 py-2.5 border border-gray-200 rounded-lg appearance-none bg-white hover:bg-gray-50 focus:outline-none focus:border-[#af0808]"
+                                className="px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-200 rounded-lg text-sm sm:text-base"
                             >
                                 <option value="All">Price Range</option>
                                 <option value="0-100000">Under $100,000</option>
@@ -248,7 +248,7 @@ function PropertiesPage() {
                             <select
                                 value={sortOrder}
                                 onChange={(e) => setSortOrder(e.target.value)}
-                                className="px-4 py-2.5 border border-gray-200 rounded-lg appearance-none bg-white hover:bg-gray-50 focus:outline-none focus:border-[#af0808]"
+                                className="px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-200 rounded-lg text-sm sm:text-base col-span-2 sm:col-span-1"
                             >
                                 <option value="default">Sort By</option>
                                 <option value="price-asc">Price: Low to High</option>
@@ -257,8 +257,8 @@ function PropertiesPage() {
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                        <div className="text-gray-600">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-3">
+                        <div className="text-sm sm:text-base text-gray-600">
                             <span className="font-semibold text-gray-900">{filteredData.length}</span> properties found
                             {(SelectedProp !== "All" || priceRange !== "All" || bedroomFilter !== "All" || searchQuery) && (
                                 <button 
@@ -270,10 +270,10 @@ function PropertiesPage() {
                             )}
                         </div>
                         
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
                             <button 
                                 onClick={() => setModelOpen(true)} 
-                                className="px-4 py-2 bg-[#af0808] text-white rounded-lg hover:bg-[#8f0606] transition-colors"
+                                className="flex-1 sm:flex-none px-4 py-2 bg-[#af0808] text-white rounded-lg text-sm sm:text-base"
                             >
                                 Add Property
                             </button>
@@ -294,12 +294,12 @@ function PropertiesPage() {
                         </div>
                     </div>
 
-                    <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+                    <div className="flex gap-2 mt-4 overflow-x-auto pb-2 -mx-2 px-2">
                         {bedroomOptions.map((beds) => (
                             <button
                                 key={beds}
                                 onClick={() => handleBedroomFilter(beds)}
-                                className={`px-4 py-1.5 border rounded-full text-sm transition-colors ${
+                                className={`px-3 sm:px-4 py-1.5 border rounded-full text-xs sm:text-sm ${
                                     bedroomFilter === beds 
                                     ? 'border-[#af0808] text-[#af0808] bg-[#af080810]' 
                                     : 'border-gray-200 hover:border-[#af0808] hover:text-[#af0808]'
@@ -350,11 +350,11 @@ function PropertiesPage() {
                 </div>
             </div>
 
-            <div className="px-2.5 lg:px-6 py-8 md:py-12">
+            <div className="px-2 sm:px-4 lg:px-6 py-6 sm:py-8 md:py-12">
                 <div className={`${
                     viewMode === 'grid' 
-                    ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-                    : 'flex flex-col gap-6'
+                    ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'
+                    : 'flex flex-col gap-4 sm:gap-6'
                 }`}>
                     {loading ? (
                         // Loading skeleton
@@ -392,7 +392,7 @@ function PropertiesPage() {
                 </div>
             </div>
 
-            <div className="h-32 flex items-center justify-center md:justify-end lg:px-16 gap-3">
+            <div className="h-24 sm:h-32 flex items-center justify-center px-2 sm:px-4 lg:px-16 gap-2 sm:gap-3">
                 <div
                     onClick={HandleBackwardClick}
                     className="border h-9 w-9 flex items-center justify-center rotate-90 rounded-md border-[#decfcf] cursor-pointer"
@@ -469,8 +469,8 @@ function PropertiesPage() {
                     </div>
 
                     {pdfIsOpen && (
-                        <div className='fixed z-[9999] top-0 right-0 bottom-0 left-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4'>
-                            <div className="ScrollBar bg-white w-full max-w-[900px] p-4 md:p-10 shadow-2xl relative max-h-[90vh] overflow-y-scroll">
+                        <div className='fixed z-[9999] top-0 right-0 bottom-0 left-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4'>
+                            <div className="ScrollBar bg-white w-full max-w-[900px] p-3 sm:p-4 md:p-10 shadow-2xl relative max-h-[90vh] overflow-y-scroll">
                                 <div ref={pdfRef} className="space-y-4 md:space-y-8">
                                     {/* Header */}
                                     <div className="text-center mb-4 md:mb-8">

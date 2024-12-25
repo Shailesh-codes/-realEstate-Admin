@@ -17,11 +17,18 @@ const SetNewPassword = () => {
   const token = searchParams.get('token');
 
   useEffect(() => {
+    console.log("Component mounted");
+    console.log("Current URL:", window.location.href);
+    console.log("Token from URL:", token);
+  }, [token]);
+
+  useEffect(() => {
     if (!token) {
-      setMessage("Invalid reset link");
-      setTimeout(() => navigate('/reset-password'), 3000);
+      setMessage("Invalid reset link. Please request a new password reset.");
+    } else {
+      setMessage('');
     }
-  }, [token, navigate]);
+  }, [token]);
 
   const defaultOptions = {
     loop: true,

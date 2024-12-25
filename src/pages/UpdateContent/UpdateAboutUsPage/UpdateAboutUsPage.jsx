@@ -5,6 +5,9 @@ import ArrowRight from '../../../../public/assests/ArrowLeft.svg';
 import AddCloudIcon from '../../../../public/assests/AddCloudIcon.svg';
 import AddImage from '../../../../public/assests/AddImage.svg';
 import api from '../../../hooks/useApi';
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 
 function UpdateAboutUsPage() {
   const [about, setAbout] = useState(
@@ -70,11 +73,11 @@ function UpdateAboutUsPage() {
       );
       
       if (response.data.success) {
-        alert('About page updated successfully');
+        toast.success('About page updated successfully');
       }
     } catch (error) {
       console.error('Error updating about page:', error);
-      alert('Failed to update about page');
+      toast.error('Failed to update about page');
     }
   };
 
@@ -99,6 +102,8 @@ function UpdateAboutUsPage() {
   }, [aboutData])
 
   return (
+    <>
+    <ToastContainer/>
     <div className="px-4 lg:px-7 py-4 lg:py-8 bg-white rounded-tl-xl flex flex-col items-center justify-center gap-4 lg:gap-7">
       <div className="w-full">
         <div className="flex justify-center items-center py-5 lg:py-10">
@@ -165,6 +170,7 @@ function UpdateAboutUsPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
