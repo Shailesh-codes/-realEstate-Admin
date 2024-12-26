@@ -20,6 +20,11 @@ const SetNewPassword = () => {
     console.log("Component mounted");
     console.log("Current URL:", window.location.href);
     console.log("Token from URL:", token);
+    
+    if (!token) {
+      console.log("No token found in URL");
+      setMessage("Invalid reset link. Please request a new password reset.");
+    }
   }, [token]);
 
   useEffect(() => {

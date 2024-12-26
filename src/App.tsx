@@ -27,6 +27,7 @@ import SetNewPassword from './Authentication/setNewPassword';
 import axios from 'axios';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
+
 // Set default base URL for all axios requests
 // axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:7777';
 
@@ -81,7 +82,7 @@ function App() {
 
   return (
     <AuthProvider>
-      {['/', '/signIn', '/forgotpass', '/resetpassword', '/propertiesdetails', '/set-new-password'].includes(pathname.split('?')[0]) ? (
+      {['/', '/signIn', '/forgotpass', '/resetpassword', '/propertiesdetails', '/set-new-password/:token'].includes(pathname.split('?')[0]) ? (
         <Routes>
           <Route index path='/' element={
             <> 
@@ -103,7 +104,7 @@ function App() {
           } />
           <Route path='/resetpassword' element={<> <PageTitle title="Reset Password | Anmol Real Estate" /><ResetPassword /> </>} />
           <Route 
-            path='/set-new-password' 
+            path='/set-new-password/:token'
             element={
               <> 
                 <PageTitle title="Set New Password | Anmol Real Estate" />
