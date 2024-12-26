@@ -3,6 +3,8 @@ import LogoutIconSVGComponent from '../../public/assests/SVGComponents/LogoutIco
 import ColorableSvg from '../hooks/ColorableSvg';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const Logout = ({ isModalOpen, setIsModalOpen }) => {
   const navigate = useNavigate();
@@ -11,6 +13,7 @@ const Logout = ({ isModalOpen, setIsModalOpen }) => {
   function HandleLogoutFunction() {
     setIsModalOpen(false);
     logout();
+    toast.success('Logged out successfully');
     navigate('/');
   }
 
@@ -20,6 +23,7 @@ const Logout = ({ isModalOpen, setIsModalOpen }) => {
 
   return (
     <>
+      <ToastContainer />
       <div className="fixed flex items-center justify-center top-0 right-0 bottom-0 left-0 bg-[#00000077] z-9999">
         <div className="w-80 p-6 bg-white rounded-3xl shadow-lg">
           <div className="flex flex-col items-center">

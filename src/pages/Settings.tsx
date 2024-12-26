@@ -7,6 +7,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 
+
 interface EmployeeData {
   fullName: string;
   phoneNumber: string;
@@ -17,7 +18,7 @@ interface EmployeeData {
 }
 
 const Settings = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const [employeeData, setEmployeeData] = useState<EmployeeData>({
     fullName: user?.name || '',
     phoneNumber: '',
@@ -26,59 +27,97 @@ const Settings = () => {
     bio: '',
   });
   const [loading, setLoading] = useState(false);
-  const [employeeId, setEmployeeId] = useState<string | null>(() => {
-    // Initialize employeeId from localStorage
-    return localStorage.getItem('employeeId');
-  });
+  const [employeeId, setEmployeeId] = useState<string | null>(null);
 
-  // Fetch employee data
+  // Update getProfilePhoto function to handle binary data
+  const getProfilePhotoUrl = async (employeeId: string) => {
+    try {
+      const response = await fetch(`${api}/employee-info/${employeeId}/photo`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch photo');
+      }
+
+      // Create blob URL from the response
+      const blob = await response.blob();
+      return URL.createObjectURL(blob);
+    } catch (error) {
+      console.error('Error fetching profile photo:', error);
+      return null;
+    }
+  };
+
+  // Update useEffect for fetching employee data
   useEffect(() => {
     const fetchEmployeeData = async () => {
-      const storedEmployeeId = user?.id || localStorage.getItem('employeeId');
+      if (!user?.id) return; // Only proceed if we have a user ID
 
-      if (storedEmployeeId) {
-        try {
-          const response = await fetch(`${api}/employee-info/${storedEmployeeId}`);
-          if (!response.ok) {
+      try {
+        // Try to fetch employee details using user ID as employeeId
+        const response = await fetch(`${api}/employee-info/by-employee-id/${user.id}`);
+        if (!response.ok) {
+          if (response.status === 404) {
+            // If employee info doesn't exist, create it
+            const createResponse = await fetch(`${api}/employee-info`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                ...employeeData,
+                employeeId: user.id // Include user.id as employeeId
+              }),
+            });
+            
+            if (!createResponse.ok) {
+              throw new Error('Failed to create employee info');
+            }
+            
+            const newData = await createResponse.json();
+            setEmployeeData(newData.employee);
+            setEmployeeId(newData.employee.id);
+          } else {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
+        } else {
           const data = await response.json();
-          setEmployeeData(data);
-          setEmployeeId(storedEmployeeId);
-        } catch (error) {
-          console.error('Error fetching employee data:', error);
-          toast.error('Failed to load employee data');
+          const photoUrl = await getProfilePhotoUrl(data.id);
+          
+          setEmployeeData({
+            ...data,
+            profilePhoto: photoUrl || undefined
+          });
+          setEmployeeId(data.id);
         }
+      } catch (error) {
+        console.error('Error fetching employee data:', error);
+        toast.error('Failed to load employee data');
       }
     };
 
     fetchEmployeeData();
   }, [user]);
 
-  // Modify handleSubmit to store employeeId
+  // Update handleSubmit to include employeeId
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      let response;
-      if (!employeeId) {
-        response = await fetch(`${api}/employee-info`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(employeeData),
-        });
-      } else {
-        response = await fetch(`${api}/employee-info/${employeeId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(employeeData),
-        });
-      }
+      const payload = {
+        ...employeeData,
+        employeeId: user?.id // Always include the user.id as employeeId
+      };
+
+      const response = await fetch(`${api}/employee-info/${employeeId || ''}`, {
+        method: employeeId ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
       const data = await response.json();
 
@@ -86,13 +125,9 @@ const Settings = () => {
         throw new Error(data.message || 'Operation failed');
       }
 
-      if (!employeeId) {
-        const newEmployeeId = data.employee.id;
-        setEmployeeId(newEmployeeId);
-        localStorage.setItem('employeeId', newEmployeeId);
-      }
-
       setEmployeeData(data.employee);
+      setEmployeeId(data.employee.id);
+      
       toast.success(employeeId ? 'Profile updated successfully' : 'Employee Information created successfully');
     } catch (error) {
       console.error('Error:', error);
@@ -109,7 +144,7 @@ const Settings = () => {
     };
   }, []);
 
-  // Handle photo upload
+  // Update handleFileUpload function
   const handleFileUpload = async (file: File) => {
     if (!employeeId) {
       toast.error('Please save employee information first');
@@ -120,36 +155,33 @@ const Settings = () => {
     formData.append('photo', file);
 
     try {
-      console.log('Uploading photo for employee ID:', employeeId);
-      console.log('File being uploaded:', file);
-
       const response = await fetch(`${api}/employee-info/${employeeId}/photo`, {
         method: 'PUT',
-        headers: {
-          'Accept': 'application/json',
-        },
         body: formData,
       });
 
-      console.log('Response status:', response.status);
-      const data = await response.json();
-      console.log('Response data:', data);
-
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to upload photo');
+        throw new Error('Failed to upload photo');
       }
 
-      if (data.profilePhotoUrl) {
+      // Fetch the updated photo URL
+      const photoUrl = await getProfilePhotoUrl(employeeId);
+      
+      if (photoUrl) {
         setEmployeeData(prev => ({
           ...prev,
-          profilePhoto: data.profilePhotoUrl
+          profilePhoto: photoUrl
         }));
+        
+        setUser(prev => prev ? {
+          ...prev,
+          profilePhoto: photoUrl
+        } : null);
+
         toast.success('Photo updated successfully');
-      } else {
-        throw new Error('No photo URL received from server');
       }
     } catch (error) {
-      console.error('Detailed upload error:', error);
+      console.error('Upload error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to upload photo');
     }
   };
@@ -161,6 +193,11 @@ const Settings = () => {
 
   // Handle photo deletion
   const handleDeletePhoto = async () => {
+    if (!employeeId) {
+      toast.error('No employee ID found');
+      return;
+    }
+
     try {
       const response = await fetch(`${api}/employee-info/${employeeId}/photo`, {
         method: 'DELETE',
@@ -168,7 +205,20 @@ const Settings = () => {
 
       if (!response.ok) throw new Error('Failed to delete photo');
 
+      // Update local state
       setEmployeeData(prev => ({ ...prev, profilePhoto: undefined }));
+      
+      // Update user context
+      setUser(prev => ({
+        ...prev!,
+        profilePhoto: undefined
+      }));
+
+      // Update localStorage if needed
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      userData.profilePhoto = undefined;
+      localStorage.setItem('user', JSON.stringify(userData));
+
       toast.success('Photo deleted successfully');
     } catch (error) {
       console.error('Error deleting photo:', error);
@@ -467,18 +517,21 @@ const Settings = () => {
                 <form action="#">
                   <div className="mb-4 flex items-center gap-3">
                     <div className="h-14 w-14 rounded-full">
-                      {employeeData.profilePhoto ? (
+                      {(employeeData.profilePhoto || user?.profilePhoto) ? (
                         <img
-                          src={typeof employeeData.profilePhoto === 'string'
-                            ? employeeData.profilePhoto
-                            : (employeeData.profilePhoto instanceof Blob
-                              ? URL.createObjectURL(employeeData.profilePhoto)
-                              : userThree)}
+                          src={employeeData.profilePhoto || user?.profilePhoto}
                           alt="User"
                           className="h-full w-full object-cover rounded-full"
+                          onError={(e) => {
+                            e.currentTarget.src = userThree; // Fallback to default image
+                          }}
                         />
                       ) : (
-                        <img src={userThree} alt="Default User" />
+                        <img 
+                          src={userThree} 
+                          alt="Default User" 
+                          className="h-full w-full object-cover rounded-full" 
+                        />
                       )}
                     </div>
                     <div>

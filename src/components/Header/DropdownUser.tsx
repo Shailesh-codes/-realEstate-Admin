@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import Arrow from '../../../public/assests/ArrowDown.svg'
@@ -10,14 +10,56 @@ import LogoutIconSVGComponent from '../../../public/assests/SVGComponents/Logout
 import AddPropSVGComponent from '../../../public/assests/SVGComponents/AddPropertyIcon';
 import Logout from '../../Authentication/Logout';
 import { useAuth } from '../../context/AuthContext';
+import api from "../../hooks/useApi";
+
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const location = useLocation();
   const { pathname } = location;
   const { user } = useAuth();
-  console.log('Current user:', user);
+ 
+
+  const getProfilePhotoUrl = async (employeeId: string) => {
+    try {
+      const response = await fetch(`${api}/employee-info/${employeeId}/photo`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch photo');
+      }
+
+      const blob = await response.blob();
+      return URL.createObjectURL(blob);
+    } catch (error) {
+      console.error('Error fetching profile photo:', error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchProfilePhoto = async () => {
+      if (user?.id) {
+        const photoUrl = await getProfilePhotoUrl(user.id);
+        if (photoUrl) {
+          setProfilePhotoUrl(photoUrl);
+        }
+      }
+    };
+
+    fetchProfilePhoto();
+
+    return () => {
+      if (profilePhotoUrl) {
+        URL.revokeObjectURL(profilePhotoUrl);
+      }
+    };
+  }, [user?.id]);
+
+  const defaultAvatar = 'https://avatar.iran.liara.run/public/boy';
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -36,7 +78,14 @@ const DropdownUser = () => {
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <img src={'https://avatar.iran.liara.run/public/boy'} alt="User" />
+          <img 
+            src={profilePhotoUrl || user?.profilePhoto || defaultAvatar} 
+            alt="User"
+            className="h-full w-full object-cover rounded-full"
+            onError={(e) => {
+              e.currentTarget.src = defaultAvatar;
+            }}
+          />
         </span>
 
         <img 

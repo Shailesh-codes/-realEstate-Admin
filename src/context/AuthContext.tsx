@@ -10,6 +10,7 @@ interface AuthContextType {
         email: string;
         role: string;
         id: string;
+        profilePhoto?: string;
     } | null;
     setUser: (user: any) => void;
     isAuthenticated: boolean;
