@@ -82,7 +82,7 @@ function App() {
 
   return (
     <AuthProvider>
-      {['/', '/signIn', '/forgotpass', '/resetpassword', '/propertiesdetails', '/set-new-password/:token'].includes(pathname.split('?')[0]) ? (
+      {pathname.startsWith('/set-new-password') || ['/', '/signIn', '/forgotpass', '/resetpassword', '/propertiesdetails'].includes(pathname) ? (
         <Routes>
           <Route index path='/' element={
             <> 
@@ -104,7 +104,7 @@ function App() {
           } />
           <Route path='/resetpassword' element={<> <PageTitle title="Reset Password | Anmol Real Estate" /><ResetPassword /> </>} />
           <Route 
-            path='/set-new-password/:token'
+            path="/set-new-password"
             element={
               <> 
                 <PageTitle title="Set New Password | Anmol Real Estate" />

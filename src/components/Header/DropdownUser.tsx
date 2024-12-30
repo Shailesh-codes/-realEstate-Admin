@@ -42,7 +42,7 @@ const DropdownUser = () => {
 
   useEffect(() => {
     const fetchProfilePhoto = async () => {
-      if (user?.id) {
+      if (user?.id && user?.role !== 'admin') {
         const photoUrl = await getProfilePhotoUrl(user.id);
         if (photoUrl) {
           setProfilePhotoUrl(photoUrl);
@@ -79,7 +79,7 @@ const DropdownUser = () => {
 
         <span className="h-12 w-12 rounded-full">
           <img 
-            src={profilePhotoUrl || user?.profilePhoto || defaultAvatar} 
+            src={user?.role === 'admin' ? defaultAvatar : (profilePhotoUrl || user?.profilePhoto || defaultAvatar)} 
             alt="User"
             className="h-full w-full object-cover rounded-full"
             onError={(e) => {

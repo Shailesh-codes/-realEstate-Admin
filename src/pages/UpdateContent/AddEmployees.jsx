@@ -35,12 +35,12 @@ const AddEmployees = () => {
 
     // Add validation
     if (!name || !email || !password) {
-      alert('Please fill in all required fields');
+      toast.error('Please fill in all required fields');
       return;
     }
 
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      alert('Please enter a valid email address');
+      toast.error('Please enter a valid email address');
       return;
     }
 
@@ -270,7 +270,7 @@ const AddEmployees = () => {
           <div className="flex justify-center items-center text-lg text-center">
             <button
               type="submit"
-              className="bg-[#af0808] hover:bg-gray-600 text-white px-10 py-3 rounded-md"
+              className="bg-[#d33636] hover:bg-gray-600 text-white px-10 py-3 rounded-md"
             >
               Add Employee
             </button>
@@ -297,27 +297,27 @@ const AddEmployees = () => {
           </div>
         </div>
         <div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+          <div className="overflow-x-auto rounded-lg shadow-lg">
+            <table className="min-w-full bg-white border-collapse">
               <thead>
-                <tr className="bg-gray-200 text-gray-700">
-                  <th className="px-4 py-3 text-left">Employees Name</th>
-                  <th className="px-4 py-3 text-left">Employees Contact No.</th>
-                  <th className="px-4 py-3 text-left">Employees Email</th>
-                  <th className="px-4 py-3 text-center">Status</th>
+                <tr className="bg-gradient-to-r from-[#eb4646] to-[#af0808] text-white">
+                  <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">Employees Name</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">Employees Contact No.</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">Employees Email</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold tracking-wider">Status</th>
                 </tr>
               </thead>
-              <tbody className="text-gray-600">
+              <tbody className="text-gray-600 divide-y divide-gray-200">
                 {employees.map((employee) => (
                   <tr
                     key={employee.id}
                     id={`row-${employee.id}`}
-                    className="border-b border-gray-200 hover:bg-gray-100"
+                    className="hover:bg-gray-50 transition-colors duration-200"
                   >
-                    <td className="px-4 py-3">{employee.name}</td>
-                    <td className="px-4 py-3">{employee.phone}</td>
-                    <td className="px-4 py-3">{employee.email}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4 whitespace-nowrap">{employee.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{employee.phone}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{employee.email}</td>
+                    <td className="px-6 py-4">
                       <div className="flex justify-center items-center">
                         <div className="flex items-center gap-3">
                           <div className="relative inline-block w-12 h-6">
@@ -331,13 +331,17 @@ const AddEmployees = () => {
                             <label
                               htmlFor={`toggle-${employee.id}`}
                               className={`absolute cursor-pointer inset-0 rounded-full transition-all duration-300 
-            ${employee.isActive ? 'bg-green-500' : 'bg-gray-300'}
-            before:content-[''] before:absolute before:w-4 before:h-4 before:bottom-1 before:left-1 
-            before:rounded-full before:bg-white before:transition-all before:duration-300
-            peer-checked:before:translate-x-6`}
+                                ${employee.isActive ? 'bg-green-500' : 'bg-gray-300'}
+                                before:content-[''] before:absolute before:w-4 before:h-4 before:bottom-1 before:left-1 
+                                before:rounded-full before:bg-white before:transition-all before:duration-300
+                                peer-checked:before:translate-x-6 shadow-sm`}
                             />
                           </div>
-                          <span className={`text-sm font-medium ${employee.isActive ? 'text-green-500' : 'text-gray-500'}`}>
+                          <span className={`text-sm font-medium ${
+                            employee.isActive 
+                              ? 'text-green-500' 
+                              : 'text-gray-500'
+                          }`}>
                             {employee.isActive ? 'Active' : 'Inactive'}
                           </span>
                         </div>

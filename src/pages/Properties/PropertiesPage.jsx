@@ -6,6 +6,9 @@ import jsPDF from 'jspdf';
 import api from "../../hooks/useApi";
 import AddPropModel from "./AddPropModel";
 import { FiSearch, FiSliders, FiMap, FiGrid } from 'react-icons/fi';
+import DeletePopup from '../../Authentication/deletePopUp';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function PropertiesPage() {
     const [SelectedProp, setSelectedProp] = useState("All");
@@ -66,10 +69,16 @@ function PropertiesPage() {
                 if (result.success && result.properties && Array.isArray(result.properties)) {
                     const propertiesWithImages = result.properties.map(property => ({
                         ...property,
-                        img: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=2084&auto=format&fit=crop",
-                        For: property.propertyFor,
+                        img: property.PropertyImages?.[0]?.url || "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=2084&auto=format&fit=crop",
+                        For: property.propertyFor || "All",
                         Garage: property.garage,
-                        Price: property.price
+                        Price: property.price,
+                        createdAt: new Date(property.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        }),
+                        Address: property.address
                     }));
                     setProperties(propertiesWithImages);
                 } else {
@@ -182,6 +191,51 @@ function PropertiesPage() {
             pdf.save('property-details.pdf');
         } catch (error) {
             console.error('Error generating PDF:', error);
+        }
+    };
+
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [propertyToDelete, setPropertyToDelete] = useState(null);
+
+    // Update the delete handler
+    const handleDeleteClick = (property) => {
+        setPropertyToDelete(property);
+        setDeleteModalOpen(true);
+    };
+
+    // Update the delete confirmation handler
+    const handleDeleteConfirm = async () => {
+        try {
+            const response = await fetch(`${api}/properties/${propertyToDelete.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                setProperties(prevProperties => 
+                    prevProperties.filter(p => p.id !== propertyToDelete.id)
+                );
+                setFilteredData(prevFiltered => 
+                    prevFiltered.filter(p => p.id !== propertyToDelete.id)
+                );
+                toast.success('Property deleted successfully');
+            } else {
+                toast.error(result.message || 'Error deleting property');
+            }
+        } catch (error) {
+            console.error('Error deleting property:', error);
+            toast.error('Error deleting property');
+        } finally {
+            setDeleteModalOpen(false);
+            setPropertyToDelete(null);
         }
     };
 
@@ -383,8 +437,10 @@ function PropertiesPage() {
                                 <PropertyCardComp
                                     key={property.id}
                                     {...property}
+                                    img={property.images}
                                     isSelected={selectedProperties.includes(property.id)}
                                     onSelect={handlePropertySelect}
+                                    onDelete={() => handleDeleteClick(property)}
                                     viewMode={viewMode}
                                 />
                             ))
@@ -564,6 +620,20 @@ function PropertiesPage() {
                     )}
                 </>
             )}
+
+            {deleteModalOpen && (
+                <DeletePopup
+                    isOpen={deleteModalOpen}
+                    onClose={() => {
+                        setDeleteModalOpen(false);
+                        setPropertyToDelete(null);
+                    }}
+                    onDelete={handleDeleteConfirm}
+                    itemName="property"
+                />
+            )}
+
+            <ToastContainer position="top-right" />
         </div>
     );
 }

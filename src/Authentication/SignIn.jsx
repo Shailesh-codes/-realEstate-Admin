@@ -94,23 +94,29 @@ const SignIn = ({ userType, setUserType }) => {
       }
     } catch (error) {
       console.error('Login error:', error);
+      
       if (error.response) {
+        const errorMessage = error.response.data.message;
+        
         switch (error.response.status) {
+          case 400:
+            setError(errorMessage || 'Please provide all required fields.');
+            break;
+          
           case 401:
-            if (error.response.data.field === 'email') {
-              setEmailError('Email not registered');
-            } else if (error.response.data.field === 'password') {
+            if (errorMessage.toLowerCase().includes('user does not exist')) {
+              setEmailError('User not found with this email and role');
+            } else if (errorMessage.toLowerCase().includes('invalid password')) {
               setPasswordError('Incorrect password');
             } else {
-              setError('Invalid credentials');
+              setError(errorMessage || 'Invalid credentials');
             }
             break;
+          
           case 403:
-            setError(`Access denied. ${userType} access not allowed.`);
+            setError(errorMessage || `Access denied for ${userType}`);
             break;
-          case 404:
-            setEmailError('User not found');
-            break;
+          
           case 422:
             if (error.response.data.errors) {
               const { email, password } = error.response.data.errors;
@@ -118,8 +124,13 @@ const SignIn = ({ userType, setUserType }) => {
               if (password) setPasswordError(password);
             }
             break;
+          
+          case 500:
+            setError('Server error. Please try again later.');
+            break;
+          
           default:
-            setError('An error occurred during sign in. Please try again.');
+            setError(errorMessage || 'An unexpected error occurred');
         }
       } else if (error.request) {
         setError('Unable to connect to the server. Please check your internet connection.');

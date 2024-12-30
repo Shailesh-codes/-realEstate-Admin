@@ -9,6 +9,8 @@ import { FaSort } from 'react-icons/fa';
 import api from "../../hooks/useApi";
 import axios from 'axios';
 import DeletePopup from '../../Authentication/deletePopUp';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ContactMessages = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,9 +81,13 @@ const ContactMessages = () => {
       if (response.data.success) {
         const updatedMessages = messages.filter(message => message.id !== id);
         setMessages(updatedMessages);
+        toast.success('Message deleted successfully');
+      } else {
+        toast.error(response.data.message || 'Error deleting message');
       }
     } catch (error) {
       console.error('Error deleting message:', error);
+      toast.error('Error deleting message');
     }
   }
 
@@ -180,18 +186,18 @@ const ContactMessages = () => {
       </div>
 
       {/* Table */}
-      <div className="mt-8 overflow-x-auto">
-        <table className="w-full lg:min-w-[800px] border-collapse">
+      <div className="mt-8 overflow-x-auto rounded-lg shadow-lg">
+        <table className="min-w-full bg-white border-collapse">
           <thead>
-            <tr className="bg-gray-50">
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">DATE</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">NAME</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">EMAIL</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">PURPOSE</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">ACTION</th>
+            <tr className="bg-gradient-to-r from-[#eb4646] to-[#af0808] text-white">
+              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">DATE</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">NAME</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">EMAIL</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">PURPOSE</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">ACTION</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-gray-600 divide-y divide-gray-200">
             {sortedMessages
               .slice(
                 (currentPage - 1) * messagesPerPage,
@@ -199,18 +205,18 @@ const ContactMessages = () => {
               )
               .map((message) => (
                 <React.Fragment key={message.id}>
-                  <tr className={`border-b transition-colors ${expandedMessageId === message.id ? 'bg-[#0b2c3d10] border-[#af0808]' : 'border-gray-200 hover:bg-gray-50'}`}>
+                  <tr className={`hover:bg-gray-50 transition-colors duration-200 ${expandedMessageId === message.id ? 'bg-[#0b2c3d10] border-[#af0808]' : 'border-gray-200'}`}>
                     <td className="px-6 py-4 text-sm text-gray-600">{new Date(message.createdAt).toLocaleDateString()}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{message.fullName}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{message.email}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{message.purpose}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <button className="p-2 rounded-full transition-colors" onClick={() => toggleMessageDetails(message.id)}>
-                          <img className='w-5' src={expandedMessageId === message.id ? EyeIcon : ClosedEyeIcon} alt="" />
+                        <button className="w-10 p-2 rounded-full transition-colors" onClick={() => toggleMessageDetails(message.id)}>
+                          <img className='lg:w-5' src={expandedMessageId === message.id ? EyeIcon : ClosedEyeIcon} alt="" />
                         </button>
-                        <button className="p-2 rounded-full hover:bg-gray-100 transition-colors" onClick={() => handleDeleteClick(message)}>
-                          <img className='w-5' src={DeleteIcon} alt="" />
+                        <button className="w-9 lg:w-9 p-2 rounded-full hover:bg-gray-100 transition-colors" onClick={() => handleDeleteClick(message)}>
+                          <img src={DeleteIcon} alt="" />
                         </button>
                       </div>
                     </td>
@@ -248,6 +254,8 @@ const ContactMessages = () => {
         onDelete={handleDeleteConfirm}
         itemName="message"
       />
+
+      <ToastContainer position="top-right" />
     </div>
   );
 };
