@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import '../../../public/Styles/toggle.css';
-import { CiUser } from 'react-icons/ci';
-import { MdOutlinePhone } from 'react-icons/md';
-import { MdOutlineEmail } from 'react-icons/md';
-import { RiLockPasswordLine } from 'react-icons/ri';
 import EyeOpenIcon from '../../../public/assests/EyeOpenIcon.svg';
 import EyeCloseIcon from '../../../public/assests/EyeCloseIcon.svg';
 import userIcon from '../../../public/assests/user.svg';
@@ -11,9 +7,6 @@ import phoneIcon from '../../../public/assests/callicon.svg';
 import emailIcon from '../../../public/assests/email.svg';
 import passwordIcon from '../../../public/assests/password.svg';
 import ArrowLeft from '../../../public/assests/ArrowLeft.svg';
-import ArrowRight from '../../../public/assests/ArrowRight.svg';
-import toggleoff from '../../../public/assests/toggle-off-stroke-rounded.svg';
-import toggleon from '../../../public/assests/toggle-on-stroke-rounded.svg';
 import axios from 'axios';
 import api from '../../hooks/useApi'
 import { toast, ToastContainer } from 'react-toastify'

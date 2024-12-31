@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import CardDataStats from '../../components/CardDataStats';
 import HomeIcon from '../../../public/assests/HomeIcon.svg'
-import MoneyIcon from '../../../public/assests/MoneyIcon.svg'
 import PropertyInquiry from '../../../public/assests/PropertyInquiry.svg'
-import { FaUsers } from 'react-icons/fa';
-import { MdTrendingUp, MdTrendingDown } from 'react-icons/md';
 import { ResponsiveContainer, CartesianGrid, Tooltip, YAxis, XAxis } from 'recharts';
 import { LineChart, Line, PieChart, Pie, Cell, Legend } from 'recharts';
 import { useAuth } from "../../context/AuthContext";
-import { UserGroupIcon, UserIcon, ChartBarIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { UserGroupIcon, UserIcon} from '@heroicons/react/24/outline';
 import axios from 'axios';
 import api from "../../hooks/useApi";
 
@@ -269,18 +266,6 @@ const ECommerce: React.FC = () => {
         >
           <img src={HomeIcon} alt="" className="w-8 h-8" />
         </CardDataStats>
-
-        {/* {user?.role === 'employee' && (
-          <CardDataStats
-            title="Monthly Sales"
-            total={stats.employeeSales.total.toString()}
-            rate={`${stats.employeeSales.trend}%`}
-            rounded={true}
-            levelUp={stats.employeeSales.trend > 0}
-          >
-            <img src={MoneyIcon} alt="" className="w-8 h-8" />
-          </CardDataStats>
-        )} */}
 
         <CardDataStats
           title="Property Inquiries"

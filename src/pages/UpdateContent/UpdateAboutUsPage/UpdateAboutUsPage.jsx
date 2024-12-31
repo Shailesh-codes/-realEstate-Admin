@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import ArrowLeft from '../../../../public/assests/ArrowLeft.svg';
-import ArrowRight from '../../../../public/assests/ArrowLeft.svg';
 import AddCloudIcon from '../../../../public/assests/AddCloudIcon.svg';
 import AddImage from '../../../../public/assests/AddImage.svg';
 import api from '../../../hooks/useApi';

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { CiSearch } from 'react-icons/ci';
-import EyeIcon from '../../../public/assests/EyeIcon.svg'
-import DeleteIcon from '../../../public/assests/DeleteIcon.svg'
-import ClosedEyeIcon from '../../../public/assests/ClosedEyeIcon.svg'
-import ArrowLeft from '../../../public/assests/ArrowLeft.svg'
-import ArrowRight from '../../../public/assests/ArrowLeft.svg'
-import { FaSort } from 'react-icons/fa';
-import api from "../../hooks/useApi";
+import EyeIcon from '../../../public/assests/EyeIcon.svg';
+import DeleteIcon from '../../../public/assests/DeleteIcon.svg';
+import ClosedEyeIcon from '../../../public/assests/ClosedEyeIcon.svg';
+import ArrowLeft from '../../../public/assests/ArrowLeft.svg';
+import ArrowRight from '../../../public/assests/ArrowLeft.svg';
+import api from '../../hooks/useApi';
 import axios from 'axios';
 import DeletePopup from '../../Authentication/deletePopUp';
 import { toast, ToastContainer } from 'react-toastify';
@@ -17,7 +16,7 @@ const ContactMessages = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEntries, setSelectedEntries] = useState(10);
   const [expandedMessageId, setExpandedMessageId] = useState(null);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const messagesPerPage = selectedEntries;
   const [messages, setMessages] = useState([]);
@@ -28,7 +27,7 @@ const ContactMessages = () => {
     const fetchMessages = async () => {
       try {
         const response = await axios.get(`${api}/contact/getcontact`, {
-          withCredentials: true
+          withCredentials: true,
         });
         if (response.data.success) {
           setMessages(response.data.data);
@@ -50,7 +49,8 @@ const ContactMessages = () => {
   };
 
   const handleSort = (key) => {
-    const direction = sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
+    const direction =
+      sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
     setSortConfig({ key, direction });
   };
 
@@ -75,11 +75,14 @@ const ContactMessages = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`${api}/contact/deletecontact/${id}`, {
-        withCredentials: true
-      });
+      const response = await axios.delete(
+        `${api}/contact/deletecontact/${id}`,
+        {
+          withCredentials: true,
+        },
+      );
       if (response.data.success) {
-        const updatedMessages = messages.filter(message => message.id !== id);
+        const updatedMessages = messages.filter((message) => message.id !== id);
         setMessages(updatedMessages);
         toast.success('Message deleted successfully');
       } else {
@@ -89,7 +92,7 @@ const ContactMessages = () => {
       console.error('Error deleting message:', error);
       toast.error('Error deleting message');
     }
-  }
+  };
 
   const handleDeleteClick = (message) => {
     setMessageToDelete(message);
@@ -130,10 +133,11 @@ const ContactMessages = () => {
           <button
             key={index}
             onClick={() => handlePageChange(page)}
-            className={`px-4 py-2 rounded-lg transition-all duration-300 ${page === currentPage
+            className={`px-4 py-2 rounded-lg transition-all duration-300 ${
+              page === currentPage
                 ? 'bg-[#af0808] text-white'
                 : 'bg-gray-100 hover:bg-gray-200'
-              }`}
+            }`}
             disabled={page === '...'}
           >
             {page}
@@ -146,11 +150,21 @@ const ContactMessages = () => {
   return (
     <div className="mx-auto px-4 py-8 bg-white rounded-tl-xl">
       <div className="flex flex-col lg:gap-6">
-        <div className='flex justify-center items-center py-10'>
+        <div className="flex justify-center items-center py-10">
           <div className="relative">
-            <img className='absolute -bottom-2 -left-5 -rotate-90' src={ArrowLeft} alt="" />
-            <h1 className="text-2xl font-bold text-[#0b2c3d] uppercase">Contact Messages</h1>
-            <img className='absolute -top-2 -right-5 rotate-90' src={ArrowRight} alt="" />
+            <img
+              className="absolute -bottom-2 -left-5 -rotate-90"
+              src={ArrowLeft}
+              alt=""
+            />
+            <h1 className="text-2xl font-bold text-[#0b2c3d] uppercase">
+              Contact Messages
+            </h1>
+            <img
+              className="absolute -top-2 -right-5 rotate-90"
+              src={ArrowRight}
+              alt=""
+            />
           </div>
         </div>
 
@@ -173,7 +187,10 @@ const ContactMessages = () => {
 
           {/* Search Bar */}
           <div className="relative w-full md:w-[40%] mt-4 md:mt-0">
-            <CiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={24} />
+            <CiSearch
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+              size={24}
+            />
             <input
               type="text"
               placeholder="Search by name"
@@ -190,11 +207,21 @@ const ContactMessages = () => {
         <table className="min-w-full bg-white border-collapse">
           <thead>
             <tr className="bg-gradient-to-r from-[#eb4646] to-[#af0808] text-white">
-              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">DATE</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">NAME</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">EMAIL</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">PURPOSE</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">ACTION</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">
+                DATE
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">
+                NAME
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">
+                EMAIL
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">
+                PURPOSE
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">
+                ACTION
+              </th>
             </tr>
           </thead>
           <tbody className="text-gray-600 divide-y divide-gray-200">
@@ -205,17 +232,45 @@ const ContactMessages = () => {
               )
               .map((message) => (
                 <React.Fragment key={message.id}>
-                  <tr className={`hover:bg-gray-50 transition-colors duration-200 ${expandedMessageId === message.id ? 'bg-[#0b2c3d10] border-[#af0808]' : 'border-gray-200'}`}>
-                    <td className="px-6 py-4 text-sm text-gray-600">{new Date(message.createdAt).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{message.fullName}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{message.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{message.purpose}</td>
+                  <tr
+                    className={`hover:bg-gray-50 transition-colors duration-200 ${
+                      expandedMessageId === message.id
+                        ? 'bg-[#0b2c3d10] border-[#af0808]'
+                        : 'border-gray-200'
+                    }`}
+                  >
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {new Date(message.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {message.fullName}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {message.email}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {message.purpose}
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <button className="w-10 p-2 rounded-full transition-colors" onClick={() => toggleMessageDetails(message.id)}>
-                          <img className='lg:w-5' src={expandedMessageId === message.id ? EyeIcon : ClosedEyeIcon} alt="" />
+                        <button
+                          className="w-10 p-2 rounded-full transition-colors"
+                          onClick={() => toggleMessageDetails(message.id)}
+                        >
+                          <img
+                            className="lg:w-5"
+                            src={
+                              expandedMessageId === message.id
+                                ? EyeIcon
+                                : ClosedEyeIcon
+                            }
+                            alt=""
+                          />
                         </button>
-                        <button className="w-9 lg:w-9 p-2 rounded-full hover:bg-gray-100 transition-colors" onClick={() => handleDeleteClick(message)}>
+                        <button
+                          className="w-9 lg:w-9 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                          onClick={() => handleDeleteClick(message)}
+                        >
                           <img src={DeleteIcon} alt="" />
                         </button>
                       </div>
@@ -223,16 +278,30 @@ const ContactMessages = () => {
                   </tr>
                   <tr>
                     <td colSpan="5" className="p-0">
-                      <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedMessageId === message.id ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                      <div
+                        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                          expandedMessageId === message.id
+                            ? 'max-h-[500px] opacity-100'
+                            : 'max-h-0 opacity-0'
+                        }`}
+                      >
                         <div className="px-6 py-4 bg-[#0b2c3d05] border-l-4 border-[#af0808]">
                           <div className="space-y-4">
                             <div>
-                              <h3 className="text-xs lg:text-lg font-medium text-gray-700">Message:</h3>
-                              <p className="text-sm lg:text-base text-gray-600">{message.message}</p>
+                              <h3 className="text-xs lg:text-lg font-medium text-gray-700">
+                                Message:
+                              </h3>
+                              <p className="text-sm lg:text-base text-gray-600">
+                                {message.message}
+                              </p>
                             </div>
                             <div>
-                              <h3 className="text-xs lg:text-lg  font-medium text-gray-700">Phone:</h3>
-                              <p className="text-sm lg:text-base text-gray-600">{message.mobileNumber}</p>
+                              <h3 className="text-xs lg:text-lg  font-medium text-gray-700">
+                                Phone:
+                              </h3>
+                              <p className="text-sm lg:text-base text-gray-600">
+                                {message.mobileNumber}
+                              </p>
                             </div>
                           </div>
                         </div>

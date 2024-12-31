@@ -2,13 +2,11 @@ import React, { useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
 import { useParams } from 'react-router-dom';
 import jsPDF from 'jspdf';
-import QRCodeGenerator from '../../components/QRCodeGenerator';
-import PropertyCardComp from '../../components/PropertyCardComp';
 
 function PropertiesDetails({ PDFIsOpen, property, setPDFIsOpen, PropertyImages }) {
   const {propertyId} = useParams();
   const pdfRef = useRef();
-  // const [property, setProperty] = useState(null);
+
 
   const getImageUrl = () => {
     if (Array.isArray(property.PropertyImages) && property.PropertyImages.length > 0) {
