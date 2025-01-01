@@ -4,7 +4,7 @@ import companyLogo from '../../public/assests/images/CompanyLogo.png';
 import axios from 'axios';
 import Lottie from 'react-lottie';
 import signInlottie from '../../public/Lotties/SignInLottieAnimation2.json';
-import api from "../hooks/useApi"
+import api from '../hooks/useApi';
 
 const ResetPassword = () => {
   const defaultOptions = {
@@ -35,11 +35,15 @@ const ResetPassword = () => {
       const response = await axios.post(`${api}/auth/reset-password-request`, {
         email,
       });
-      setMessage(response.data.message || 'If an account exists with this email, you will receive a password reset link shortly.');
-      console.log('Reset password response:', response.data);
+      setMessage(
+        response.data.message ||
+          'If an account exists with this email, you will receive a password reset link shortly.',
+      );
     } catch (error) {
-      console.error('Reset password error:', error);
-      setMessage( error.response.data.message || 'No account found with this email address. Please check and try again.');
+      setMessage(
+        error.response.data.message ||
+          'No account found with this email address. Please check and try again.',
+      );
     } finally {
       setLoading(false);
     }
@@ -159,9 +163,7 @@ const ResetPassword = () => {
                 </div>
 
                 {message && (
-                  <div className="mt-4 text-center text-sm">
-                    {message}
-                  </div>
+                  <div className="mt-4 text-center text-sm">{message}</div>
                 )}
 
                 {/* Back to Sign In Link */}

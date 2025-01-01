@@ -20,7 +20,7 @@ const DropdownUser = () => {
   const location = useLocation();
   const { pathname } = location;
   const { user } = useAuth();
- 
+
 
   const getProfilePhotoUrl = async (employeeId: string) => {
     try {
@@ -78,8 +78,8 @@ const DropdownUser = () => {
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <img 
-            src={user?.role === 'admin' ? defaultAvatar : (profilePhotoUrl || user?.profilePhoto || defaultAvatar)} 
+          <img
+            src={user?.role === 'admin' ? defaultAvatar : (profilePhotoUrl || user?.profilePhoto || defaultAvatar)}
             alt="User"
             className="h-full w-full object-cover rounded-full"
             onError={(e) => {
@@ -88,10 +88,10 @@ const DropdownUser = () => {
           />
         </span>
 
-        <img 
-          className={`${dropdownOpen ? 'rotate-180' : ''} transition-all duration-500 ease-in-out`} 
-          src={Arrow} 
-          alt="" 
+        <img
+          className={`${dropdownOpen ? 'rotate-180' : ''} transition-all duration-500 ease-in-out`}
+          src={Arrow}
+          alt=""
         />
       </Link>
 
@@ -111,17 +111,23 @@ const DropdownUser = () => {
               Dashboard
             </Link>
           </li>
-          <li>
-            <Link
-              to="/contactpage"
-              className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-[#af0808] lg:text-base"
-            >
-              <ColorableSvg color="blue" width={24} height={24}>
-                <ContactIcon color={pathname === ('/contactpage') && '#af0808'} />
-              </ColorableSvg>
-              Contact Messages
-            </Link>
-          </li>
+          {
+            user?.role === "admin" && (
+              <li>
+                <Link
+                  to="/contactpage"
+                  className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-[#af0808] lg:text-base"
+                >
+                  <ColorableSvg color="blue" width={24} height={24}>
+                    <ContactIcon color={pathname === ('/contactpage') && '#af0808'} />
+                  </ColorableSvg>
+                  Contact Messages
+                </Link>
+              </li>
+
+            )
+          }
+
           {user?.role === 'employee' && (
             <li>
               <Link
@@ -149,7 +155,7 @@ const DropdownUser = () => {
             </li>
           )}
         </ul>
-        <button 
+        <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-[#af0808] lg:text-base"
         >

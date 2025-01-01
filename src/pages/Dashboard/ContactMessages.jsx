@@ -32,9 +32,7 @@ const ContactMessages = () => {
         if (response.data.success) {
           setMessages(response.data.data);
         }
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-      }
+      } catch (error) {}
     };
 
     fetchMessages();
@@ -285,7 +283,7 @@ const ContactMessages = () => {
                             : 'max-h-0 opacity-0'
                         }`}
                       >
-                        <div className="px-6 py-4 bg-[#0b2c3d05] border-l-4 border-[#af0808]">
+                        <div className="px-6 py-4 bg-[#0b2c3d05] border-l-4 border-[#eb4646]">
                           <div className="space-y-4">
                             <div>
                               <h3 className="text-xs lg:text-lg font-medium text-gray-700">

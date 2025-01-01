@@ -17,9 +17,7 @@ function UpdateLocation() {
           setMapUrl(data.mapUrl || '');
           setAddress(data.address || '');
         }
-      } catch (error) {
-        console.error('Error fetching location:', error);
-      }
+      } catch (error) {}
     };
 
     fetchLocation();
@@ -55,7 +53,6 @@ function UpdateLocation() {
         throw new Error(errorData.error || 'Failed to update location');
       }
     } catch (error) {
-      console.error('Error updating location:', error);
       toast.error(error.message || 'Failed to update location');
     }
   };

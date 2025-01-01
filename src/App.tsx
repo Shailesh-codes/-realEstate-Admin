@@ -26,17 +26,19 @@ import ResetPassword from './Authentication/ResetPassword';
 import SetNewPassword from './Authentication/setNewPassword';
 import axios from 'axios';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 // Set default base URL for all axios requests
 // axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:7777';
 
-function App() {
+function AppContent() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [PDFIsOpen, setPDFIsOpen] = useState<boolean>(false);
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [userType, setUserType] = useState<string>('employee');
 
   useEffect(() => {
@@ -46,6 +48,7 @@ function App() {
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);
+  
 
 
   const Property = {
@@ -81,26 +84,34 @@ function App() {
   if (loading) return <Loader />;
 
   return (
-    <AuthProvider>
+    <>
       {pathname.startsWith('/set-new-password') || ['/', '/signIn', '/forgotpass', '/resetpassword', '/propertiesdetails'].includes(pathname) ? (
         <Routes>
           <Route index path='/' element={
-            <> 
-              <PageTitle title="Sign In | Anmol Real Estate" />
-              <SignIn 
-                userType={userType} 
-                setUserType={setUserType}
-              /> 
-            </>
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <> 
+                <PageTitle title="Sign In | Anmol Real Estate" />
+                <SignIn 
+                  userType={userType} 
+                  setUserType={setUserType}
+                /> 
+              </>
+            )
           } />
           <Route path='/signIn' element={
-            <> 
-              <PageTitle title="Sign In | Anmol Real Estate" />
-              <SignIn 
-                userType={userType} 
-                setUserType={setUserType}
-              /> 
-            </>
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <> 
+                <PageTitle title="Sign In | Anmol Real Estate" />
+                <SignIn 
+                  userType={userType} 
+                  setUserType={setUserType}
+                /> 
+              </>
+            )
           } />
           <Route path='/resetpassword' element={<> <PageTitle title="Reset Password | Anmol Real Estate" /><ResetPassword /> </>} />
           <Route 
@@ -210,6 +221,26 @@ function App() {
       )}
 
       {isModalOpen && <Logout isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+    </>
+  );
+}
+
+// New main App component that provides the auth context
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
     </AuthProvider>
   );
 }

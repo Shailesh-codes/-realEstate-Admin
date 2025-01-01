@@ -8,10 +8,9 @@ import emailIcon from '../../../public/assests/email.svg';
 import passwordIcon from '../../../public/assests/password.svg';
 import ArrowLeft from '../../../public/assests/ArrowLeft.svg';
 import axios from 'axios';
-import api from '../../hooks/useApi'
-import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-
+import api from '../../hooks/useApi';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddEmployees = () => {
   const [name, setName] = useState('');
@@ -38,19 +37,16 @@ const AddEmployees = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${api}/employees/add`,
-        {
-          name,
-          phone,
-          email,
-          password,
-        },
-      );
+      const response = await axios.post(`${api}/employees/add`, {
+        name,
+        phone,
+        email,
+        password,
+      });
 
       if (response.data.success) {
         // Add the new employee to the list immediately
-        setEmployees(prev => [...prev, response.data.employee]);
+        setEmployees((prev) => [...prev, response.data.employee]);
 
         // Clear form
         setName('');
@@ -59,10 +55,10 @@ const AddEmployees = () => {
         setPassword('');
 
         // Show success message
-        alert('Employee added successfully!');
+        toast('Employee added successfully!');
       }
     } catch (error) {
-      alert(error.response?.data?.message || 'Error adding employee');
+      toast.error(error.response?.data?.message || 'Error adding employee');
     }
   };
 
@@ -70,16 +66,14 @@ const AddEmployees = () => {
     try {
       const response = await axios.get(`${api}/employees/all`);
       if (response.data.success) {
-        const formattedEmployees = response.data.employees.map(emp => ({
+        const formattedEmployees = response.data.employees.map((emp) => ({
           ...emp,
-          isActive: Boolean(emp.isActive) // Ensure isActive is boolean
+          isActive: Boolean(emp.isActive), // Ensure isActive is boolean
         }));
-        console.log('Fetched and formatted employees:', formattedEmployees);
+
         setEmployees(formattedEmployees);
       }
-    } catch (error) {
-      console.error('Error fetching employees:', error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -87,36 +81,33 @@ const AddEmployees = () => {
   }, []);
 
   const toggleEmployeeStatus = async (employeeId, currentStatus) => {
-    console.log('Attempting to toggle status for employee:', employeeId);
-    console.log('Current status:', currentStatus);
-
     try {
-      const response = await axios.patch(`${api}/employees/toggle-status/${employeeId}`);
-      console.log('Server response:', response.data);
+      const response = await axios.patch(
+        `${api}/employees/toggle-status/${employeeId}`,
+      );
 
       if (response.data.success) {
-        setEmployees(prevEmployees =>
-          prevEmployees.map(emp =>
+        setEmployees((prevEmployees) =>
+          prevEmployees.map((emp) =>
             emp.id === employeeId
-              ? { ...emp, isActive: !emp.isActive }  // Toggle the current status
-              : emp
-          )
+              ? { ...emp, isActive: !emp.isActive } // Toggle the current status
+              : emp,
+          ),
         );
         !currentStatus
           ? toast.success(`Employee activated successfully`)
           : toast.error(`Employee deactivated successfully`);
       }
     } catch (error) {
-      console.log('Full error object:', error);
-      console.log('Response data:', error.response?.data);
-      setEmployees(prevEmployees => [...prevEmployees]); // Force re-render
-      alert('Error updating status: ' + (error.response?.data?.message || error.message));
+      setEmployees((prevEmployees) => [...prevEmployees]); // Force re-render
+      toast.error(
+        'Error updating status: ' +
+          (error.response?.data?.message || error.message),
+      );
     }
   };
 
-  useEffect(() => {
-    console.log('Current employees state:', employees);
-  }, [employees]);
+  useEffect(() => {}, [employees]);
 
   return (
     <>
@@ -163,7 +154,7 @@ const AddEmployees = () => {
                   type="text"
                   name="fullName"
                   id="fullName"
-                  placeholder="Shailesh"
+                  placeholder="Employee Name"
                   defaultValue="Shailesh"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -189,8 +180,8 @@ const AddEmployees = () => {
                   type="text"
                   name="phoneNumber"
                   id="phoneNumber"
-                  placeholder="   +9903343 7865"
-                  defaultValue="     +990 3343 7865"
+                  placeholder="+910303030303"
+                  defaultValue="+91033437865"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                 />
@@ -216,7 +207,7 @@ const AddEmployees = () => {
                   type="text"
                   name="email"
                   id="email"
-                  placeholder="Shailesh512@gmail.com"
+                  placeholder="employee@gmail.com"
                   defaultValue="Shailesh512@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -238,12 +229,12 @@ const AddEmployees = () => {
                   </div>
                 </span>
                 <input
-                  className="w-full rounded border border-[#af080834]  py-3 px-11.5 text-black focus:border-[#af0808] focus-visible:outline-none dark:border-[#af080834]dark dark:bg-meta-4 dark:text-white dark:focus:border-[#af0808]"
+                  className="w-full rounded border  border-[#af080834]  py-3 px-11.5 text-black focus:border-[#af0808] focus-visible:outline-none dark:border-[#af080834]dark dark:bg-meta-4 dark:text-white dark:focus:border-[#af0808]"
                   name="phoneNumber"
                   type={`${togglePassword ? 'text' : 'password'}`}
                   value={password}
                   id="phoneNumber"
-                  placeholder="Shailesh@11"
+                  placeholder="emp******"
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <span
@@ -294,10 +285,18 @@ const AddEmployees = () => {
             <table className="min-w-full bg-white border-collapse">
               <thead>
                 <tr className="bg-gradient-to-r from-[#eb4646] to-[#af0808] text-white">
-                  <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">Employees Name</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">Employees Contact No.</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">Employees Email</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">
+                    Employees Name
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">
+                    Employees Contact No.
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold tracking-wider">
+                    Employees Email
+                  </th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold tracking-wider">
+                    Status
+                  </th>
                 </tr>
               </thead>
               <tbody className="text-gray-600 divide-y divide-gray-200">
@@ -307,9 +306,15 @@ const AddEmployees = () => {
                     id={`row-${employee.id}`}
                     className="hover:bg-gray-50 transition-colors duration-200"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">{employee.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{employee.phone}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{employee.email}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {employee.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {employee.phone}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {employee.email}
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex justify-center items-center">
                         <div className="flex items-center gap-3">
@@ -318,23 +323,34 @@ const AddEmployees = () => {
                               id={`toggle-${employee.id}`}
                               type="checkbox"
                               checked={employee.isActive}
-                              onChange={() => toggleEmployeeStatus(employee.id, employee.isActive)}
+                              onChange={() =>
+                                toggleEmployeeStatus(
+                                  employee.id,
+                                  employee.isActive,
+                                )
+                              }
                               className="peer opacity-0 w-0 h-0"
                             />
                             <label
                               htmlFor={`toggle-${employee.id}`}
                               className={`absolute cursor-pointer inset-0 rounded-full transition-all duration-300 
-                                ${employee.isActive ? 'bg-green-500' : 'bg-gray-300'}
+                                ${
+                                  employee.isActive
+                                    ? 'bg-green-500'
+                                    : 'bg-gray-300'
+                                }
                                 before:content-[''] before:absolute before:w-4 before:h-4 before:bottom-1 before:left-1 
                                 before:rounded-full before:bg-white before:transition-all before:duration-300
                                 peer-checked:before:translate-x-6 shadow-sm`}
                             />
                           </div>
-                          <span className={`text-sm font-medium ${
-                            employee.isActive 
-                              ? 'text-green-500' 
-                              : 'text-gray-500'
-                          }`}>
+                          <span
+                            className={`text-sm font-medium ${
+                              employee.isActive
+                                ? 'text-green-500'
+                                : 'text-gray-500'
+                            }`}
+                          >
                             {employee.isActive ? 'Active' : 'Inactive'}
                           </span>
                         </div>

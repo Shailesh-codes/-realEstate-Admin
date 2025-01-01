@@ -113,7 +113,6 @@ function AddPropModel({ modelOpen, setModelOpen }) {
         // Optional: Clear form fields here if needed
       }
     } catch (error) {
-      console.error('Error creating property:', error.response?.data || error);
       toast.error(error.response?.data?.message || 'Failed to add property');
     }
   };

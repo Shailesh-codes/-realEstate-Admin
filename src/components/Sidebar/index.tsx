@@ -59,14 +59,6 @@ const Sidebar = ({
     return () => document.removeEventListener('click', clickHandler);
   });
 
-  // useEffect(() => {
-  //   const keyHandler = ({ keyCode }: KeyboardEvent) => {
-  //     if (!sidebarOpen || keyCode !== 27) return;
-  //     setSidebarOpen(false);
-  //   };
-  //   document.addEventListener('keydown', keyHandler);
-  //   return () => document.removeEventListener('keydown', keyHandler);
-  // }, [sidebarOpen]);
 
   useEffect(() => {
     localStorage.setItem('sidebar-expanded', sidebarExpanded.toString());
@@ -312,6 +304,7 @@ const Sidebar = ({
                 className="flex px-4 text-[#0b2c3d] bg-[#e8ebed8a] py-2 font-medium justify-between items-center w-full"
               >
                 Logout
+            
                 <ColorableSvg color="blue" width={24} height={24}>
                   <LogoutIconSVGComponent color={''} />
                 </ColorableSvg>

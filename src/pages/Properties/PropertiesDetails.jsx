@@ -3,14 +3,24 @@ import html2canvas from 'html2canvas';
 import { useParams } from 'react-router-dom';
 import jsPDF from 'jspdf';
 
-function PropertiesDetails({ PDFIsOpen, property, setPDFIsOpen, PropertyImages }) {
-  const {propertyId} = useParams();
+function PropertiesDetails({
+  PDFIsOpen,
+  property,
+  setPDFIsOpen,
+  PropertyImages,
+}) {
+  const { propertyId } = useParams();
   const pdfRef = useRef();
 
-
   const getImageUrl = () => {
-    if (Array.isArray(property.PropertyImages) && property.PropertyImages.length > 0) {
-      if (property.PropertyImages[0].image && property.PropertyImages[0].image.startsWith('data:image')) {
+    if (
+      Array.isArray(property.PropertyImages) &&
+      property.PropertyImages.length > 0
+    ) {
+      if (
+        property.PropertyImages[0].image &&
+        property.PropertyImages[0].image.startsWith('data:image')
+      ) {
         return property.PropertyImages[0].image;
       }
       if (property.PropertyImages[0].url) {
@@ -20,7 +30,7 @@ function PropertiesDetails({ PDFIsOpen, property, setPDFIsOpen, PropertyImages }
         return `data:image/jpeg;base64,${property.PropertyImages[0].image}`;
       }
     }
-    return "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=2084&auto=format&fit=crop";
+    return 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=2084&auto=format&fit=crop';
   };
 
   const downloadPDF = async () => {
@@ -51,9 +61,7 @@ function PropertiesDetails({ PDFIsOpen, property, setPDFIsOpen, PropertyImages }
         imgHeight * ratio,
       );
       pdf.save('property-details.pdf');
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
+    } catch (error) {}
   };
 
   if (!property) {
@@ -61,8 +69,7 @@ function PropertiesDetails({ PDFIsOpen, property, setPDFIsOpen, PropertyImages }
   }
 
   return (
-
-    <div className='flex my-10 justify-center items-center'>
+    <div className="flex my-10 justify-center items-center">
       <div className="w-full max-w-[1000px] p-4 md:p-10 shadow-2xl relative max-h-[200vh]">
         <div ref={pdfRef} className="space-y-4 md:space-y-8">
           {/* Header */}

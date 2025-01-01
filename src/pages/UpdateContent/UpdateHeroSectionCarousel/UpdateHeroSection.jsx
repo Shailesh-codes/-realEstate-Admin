@@ -38,9 +38,7 @@ function UpdateHeroSection() {
           : `data:image/jpeg;base64,${carousel.image}`,
       }));
       setCarousels(formattedData);
-    } catch (error) {
-      console.error('Error fetching carousels:', error);
-    }
+    } catch (error) {}
   };
 
   async function handleCarouselAdd() {
@@ -77,9 +75,7 @@ function UpdateHeroSection() {
             behavior: 'smooth',
           });
         }
-      } catch (error) {
-        console.error('Error adding carousel:', error);
-      }
+      } catch (error) {}
     }
   }
 
@@ -141,9 +137,7 @@ function UpdateHeroSection() {
           };
           reader.readAsDataURL(file);
         }
-      } catch (error) {
-        console.error('Error updating image:', error);
-      }
+      } catch (error) {}
     }
   }
 
@@ -169,9 +163,7 @@ function UpdateHeroSection() {
         await fetchCarousels();
         setEditModel(false);
       }
-    } catch (error) {
-      console.error('Error updating carousel:', error);
-    }
+    } catch (error) {}
   };
 
   return (

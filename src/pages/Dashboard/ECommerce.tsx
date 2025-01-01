@@ -5,7 +5,7 @@ import PropertyInquiry from '../../../public/assests/PropertyInquiry.svg'
 import { ResponsiveContainer, CartesianGrid, Tooltip, YAxis, XAxis } from 'recharts';
 import { LineChart, Line, PieChart, Pie, Cell, Legend } from 'recharts';
 import { useAuth } from "../../context/AuthContext";
-import { UserGroupIcon, UserIcon} from '@heroicons/react/24/outline';
+import { UserGroupIcon, UserIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import api from "../../hooks/useApi";
 
@@ -52,18 +52,18 @@ const ECommerce: React.FC = () => {
         const response = await axios.get(`${api}/employees/all`, {
           withCredentials: true
         });
-        
+
         if (response.data.success) {
           const activeCount = response.data.employees.filter(emp => emp.isActive).length;
           const inactiveCount = response.data.employees.filter(emp => !emp.isActive).length;
-          
+
           setEmployeeStats({
             active: activeCount,
             inactive: inactiveCount
           });
         }
       } catch (error) {
-        console.error('Error fetching employee stats:', error);
+
       }
     };
 
@@ -96,7 +96,7 @@ const ECommerce: React.FC = () => {
           });
         }
       } catch (error) {
-        console.error('Error fetching contact stats:', error);
+
       }
     };
 
@@ -111,11 +111,9 @@ const ECommerce: React.FC = () => {
         });
 
         if (response.data.success) {
-          console.log('Monthly data:', response.data.data);
           setMonthlyMessageCounts(response.data.data);
         }
       } catch (error) {
-        console.error('Error fetching monthly message counts:', error);
       }
     };
 
@@ -141,7 +139,7 @@ const ECommerce: React.FC = () => {
           }));
         }
       } catch (error) {
-        console.error('Error fetching property stats:', error);
+
       }
     };
 
@@ -163,10 +161,10 @@ const ECommerce: React.FC = () => {
         if (response.data.success) {
           const filteredInquiries = response.data.data.filter(inquiry => {
             const inquiryDate = new Date(inquiry.createdAt);
-            return inquiryDate >= new Date(dateRange.startDate) && 
-                   inquiryDate <= new Date(dateRange.endDate);
+            return inquiryDate >= new Date(dateRange.startDate) &&
+              inquiryDate <= new Date(dateRange.endDate);
           });
-          
+
           setStats(prevStats => ({
             ...prevStats,
             inquiries: {
@@ -176,7 +174,7 @@ const ECommerce: React.FC = () => {
           }));
         }
       } catch (error) {
-        console.error('Error fetching inquiry stats:', error);
+
       }
     };
 
@@ -233,30 +231,30 @@ const ECommerce: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Date Range Selector */}
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <div className="flex justify-between items-center">
-          <h3 className="text-xl font-semibold">Date Range Filter</h3>
-          <div className="flex gap-2">
+    <div className="space-y-4 md:space-y-6">
+      {/* Date Range Selector - Update responsive classes */}
+      <div className="bg-white p-3 md:p-4 rounded-lg shadow-md">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+          <h3 className="text-sm md:text-lg lg:text-xl font-semibold">Date Range Filter</h3>
+          <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2">
             <input
               type="date"
               value={dateRange.startDate}
               onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-              className="px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#af0808]"
+              className="w-full sm:w-auto px-2 py-1.5 md:py-2 text-sm md:text-base border rounded-lg focus:outline-none focus:ring-1 lg:focus:ring-2 focus:ring-[#af0808]"
             />
             <input
               type="date"
               value={dateRange.endDate}
               onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-              className="px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#af0808]"
+              className="w-full sm:w-auto px-2 py-1.5 md:py-2 text-sm md:text-base border rounded-lg focus:outline-none focus:ring-1 lg:focus:ring-2 focus:ring-[#af0808]"
             />
           </div>
         </div>
       </div>
 
-      {/* Stats Cards - These will now show filtered data */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+      {/* Stats Cards - Update grid layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
         <CardDataStats
           title="Total Properties"
           total={stats.properties.total.toString()}
@@ -303,12 +301,18 @@ const ECommerce: React.FC = () => {
       </div>
 
       {user?.role === "admin" && (
-        <div className='flex flex-col lg:flex-row gap-10'>
-          <div className="lg:w-[50%] w-full bg-white p-6 rounded-lg shadow-md">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold">Contact Message Analytics</h3>
+        <div className='flex flex-col lg:flex-row gap-4 md:gap-6 lg:gap-10'>
+          {/* Chart Container 1 - Enhanced Line Chart */}
+          <div className="w-full lg:w-[50%] bg-white p-4 md:p-6 rounded-lg shadow-lg border border-gray-100">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 md:mb-6">
+              <h3 className="text-sm md:text-lg lg:text-xl font-semibold text-gray-800">
+                Contact Message Analytics
+                <span className="block text-xs text-gray-500 font-normal mt-1">Monthly message distribution</span>
+              </h3>
               <select
-                className="px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#af0808]"
+                className="w-full sm:w-auto text-xs md:text-sm lg:text-base px-3 py-2 border rounded-lg 
+                           focus:outline-none focus:ring-2 focus:ring-[#af0808] bg-white shadow-sm
+                           transition-all duration-200 ease-in-out hover:border-[#af0808]"
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
               >
@@ -328,32 +332,62 @@ const ECommerce: React.FC = () => {
               </select>
             </div>
 
-            <div className="h-80">
+            <div className="h-60 md:h-70 lg:h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={monthlyMessageCounts}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                <LineChart data={monthlyMessageCounts}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                  <defs>
+                    <linearGradient id="colorInquiries" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#af0808" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#af0808" stopOpacity={0.1} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis
                     dataKey="month"
+                    stroke="#666"
+                    tick={{ fill: '#666', fontSize: 12 }}
+                    axisLine={{ stroke: '#ccc' }}
                   />
-                  <YAxis />
-                  <Tooltip />
+                  <YAxis
+                    stroke="#666"
+                    tick={{ fill: '#666', fontSize: 12 }}
+                    axisLine={{ stroke: '#ccc' }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid #ccc',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="inquiries"
                     stroke="#af0808"
-                    strokeWidth={2}
+                    strokeWidth={3}
                     name="Messages"
+                    dot={{ stroke: '#af0808', strokeWidth: 2, r: 4, fill: 'white' }}
+                    activeDot={{ r: 6, stroke: '#af0808', strokeWidth: 2, fill: 'white' }}
+                    fill="url(#colorInquiries)"
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="lg:w-[50%] w-full bg-white p-6 rounded-lg shadow-md">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Property Type</h3>
+          {/* Chart Container 2 - Enhanced Pie Chart */}
+          <div className="w-full lg:w-[50%] bg-white p-4 md:p-6 rounded-lg shadow-lg border border-gray-100">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 md:mb-6">
+              <h3 className="text-sm md:text-lg lg:text-xl font-semibold text-gray-800">
+                Property Type
+                <span className="block text-xs text-gray-500 font-normal mt-1">Distribution by category</span>
+              </h3>
               <select
-                className="px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#af0808]"
+                className="w-full sm:w-auto text-xs md:text-sm lg:text-base px-3 py-2 border rounded-lg 
+                           focus:outline-none focus:ring-2 focus:ring-[#af0808] bg-white shadow-sm
+                           transition-all duration-200 ease-in-out hover:border-[#af0808]"
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
               >
@@ -372,24 +406,44 @@ const ECommerce: React.FC = () => {
                 <option value="12">December</option>
               </select>
             </div>
-            <div className="h-80">
+
+            <div className="h-60 md:h-70 lg:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={getLeadSourceData()}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={90}
-                    paddingAngle={5}
+                    innerRadius={70}
+                    outerRadius={100}
+                    paddingAngle={8}
                     dataKey="value"
+                    startAngle={90}
+                    endAngle={450}
                   >
                     {getLeadSourceData().map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                        stroke="white"
+                        strokeWidth={2}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip />
-                  <Legend />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid #ccc',
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    height={36}
+                    iconType="circle"
+                    formatter={(value) => <span className="text-sm text-gray-700">{value}</span>}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>

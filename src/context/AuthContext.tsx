@@ -30,10 +30,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if (user) {
             localStorage.setItem('user', JSON.stringify(user));
-            // Set axios default header
             axios.defaults.withCredentials = true;
         } else {
             localStorage.removeItem('user');
+            // Clear axios defaults when logged out
+            delete axios.defaults.headers.common['Authorization'];
         }
     }, [user]);
 
@@ -41,9 +42,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             await axios.post(`${api}/auth/logout`);
             setUser(null);
-            localStorage.removeItem('user');
+            localStorage.clear(); // Clear all localStorage items
+            // Clear any cookies
+            document.cookie.split(";").forEach((c) => {
+                document.cookie = c
+                    .replace(/^ +/, "")
+                    .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
         } catch (error) {
             console.error('Logout error:', error);
+            throw error; // Propagate error to handle in component
         }
     };
 

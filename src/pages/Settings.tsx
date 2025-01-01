@@ -43,7 +43,6 @@ const Settings = () => {
       const blob = await response.blob();
       return URL.createObjectURL(blob);
     } catch (error) {
-      console.error('Error fetching profile photo:', error);
       return null;
     }
   };
@@ -91,7 +90,7 @@ const Settings = () => {
           setEmployeeId(data.id);
         }
       } catch (error) {
-        console.error('Error fetching employee data:', error);
+
         toast('Please update your profile!');
       }
     };
@@ -129,7 +128,7 @@ const Settings = () => {
 
       toast.success(employeeId ? 'Profile updated successfully' : 'Employee Information created successfully');
     } catch (error) {
-      console.error('Error:', error);
+
       toast.error(error instanceof Error ? error.message : 'Operation failed');
     } finally {
       setLoading(false);
@@ -180,7 +179,7 @@ const Settings = () => {
         toast.success('Photo updated successfully');
       }
     } catch (error) {
-      console.error('Upload error:', error);
+
       toast.error(error instanceof Error ? error.message : 'Failed to upload photo');
     }
   };
@@ -220,7 +219,7 @@ const Settings = () => {
 
       toast.success('Photo deleted successfully');
     } catch (error) {
-      console.error('Error deleting photo:', error);
+
       toast.error('Failed to delete photo');
     }
   };
@@ -255,10 +254,10 @@ const Settings = () => {
 
       // Update the state with the new employee data
       setEmployeeData(data.employee);
-      alert('Employee created successfully');
+      toast('Employee created successfully');
     } catch (error) {
-      console.error('Error creating employee:', error);
-      alert(error instanceof Error ? error.message : 'Failed to create employee');
+
+      toast(error instanceof Error ? error.message : 'Failed to create employee');
     }
   };
 
@@ -282,7 +281,7 @@ const Settings = () => {
       if (file.type.startsWith('image/')) {
         await handleFileUpload(file);
       } else {
-        alert('Please upload an image file');
+        toast('Please upload an image file');
       }
     }
   };

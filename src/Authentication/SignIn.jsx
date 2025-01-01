@@ -8,6 +8,8 @@ import signInlottie from '../../public/Lotties/SignInLottieAnimation2.json';
 import api from '../hooks/useApi';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const styles = `
 @keyframes shake {
@@ -56,20 +58,40 @@ const SignIn = ({ userType, setUserType }) => {
     setPasswordError('');
 
     if (!email.trim() && !password.trim()) {
+      toast.error('Please enter both email and password.', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       setError('Please enter both email and password.');
       return;
     }
     if (!email.trim()) {
+      toast.error('Email is required', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
       setEmailError('Email is required');
       return;
     }
     if (!password.trim()) {
+      toast.error('Password is required', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
       setPasswordError('Password is required');
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
+      toast.error('Please enter a valid email address', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
       setEmailError('Please enter a valid email address');
       return;
     }
@@ -85,56 +107,85 @@ const SignIn = ({ userType, setUserType }) => {
         },
         {
           withCredentials: true,
-        }
+        },
       );
 
       if (response.data.success) {
         setUser(response.data.user);
-        navigate('/dashboard');
+        toast.success('Login successful!', {
+          position: 'top-right',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1000);
       }
     } catch (error) {
-      console.error('Login error:', error);
-      
       if (error.response) {
         const errorMessage = error.response.data.message;
-        
+
         switch (error.response.status) {
           case 400:
+            toast.error(errorMessage || 'Please provide all required fields.');
             setError(errorMessage || 'Please provide all required fields.');
             break;
-          
+
           case 401:
             if (errorMessage.toLowerCase().includes('user does not exist')) {
+              toast.error('User not found with this email and role');
               setEmailError('User not found with this email and role');
-            } else if (errorMessage.toLowerCase().includes('invalid password')) {
+            } else if (
+              errorMessage.toLowerCase().includes('invalid password')
+            ) {
+              toast.error('Incorrect password');
               setPasswordError('Incorrect password');
             } else {
+              toast.error(errorMessage || 'Invalid credentials');
               setError(errorMessage || 'Invalid credentials');
             }
             break;
-          
+
           case 403:
+            toast.error(errorMessage || `Access denied for ${userType}`);
             setError(errorMessage || `Access denied for ${userType}`);
             break;
-          
+
           case 422:
             if (error.response.data.errors) {
               const { email, password } = error.response.data.errors;
-              if (email) setEmailError(email);
-              if (password) setPasswordError(password);
+              if (email) {
+                toast.error(email);
+                setEmailError(email);
+              }
+              if (password) {
+                toast.error(password);
+                setPasswordError(password);
+              }
             }
             break;
-          
+
           case 500:
+            toast.error('Server error. Please try again later.');
             setError('Server error. Please try again later.');
             break;
-          
+
           default:
+            toast.error(errorMessage || 'An unexpected error occurred');
             setError(errorMessage || 'An unexpected error occurred');
         }
       } else if (error.request) {
-        setError('Unable to connect to the server. Please check your internet connection.');
+        toast.error(
+          'Unable to connect to the server. Please check your internet connection.',
+        );
+        setError(
+          'Unable to connect to the server. Please check your internet connection.',
+        );
       } else {
+        toast.error('An unexpected error occurred. Please try again.');
         setError('An unexpected error occurred. Please try again.');
       }
     }
@@ -142,7 +193,7 @@ const SignIn = ({ userType, setUserType }) => {
 
   const handleRoleSelection = (role) => {
     setUserType(role);
-  }
+  };
 
   return (
     <>
@@ -186,8 +237,16 @@ const SignIn = ({ userType, setUserType }) => {
 
                 {error && (
                   <div className="text-center mb-4 p-4 text-sm text-red-500 bg-gradient-to-r from-red-50 to-transparent rounded-lg border border-red-100 shadow-sm animate-[fadeIn_0.3s_ease-in-out] flex items-center justify-center gap-2">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                    <svg
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     {error}
                   </div>
@@ -228,15 +287,25 @@ const SignIn = ({ userType, setUserType }) => {
                         type="email"
                         placeholder="Enter your email"
                         className={`w-full rounded-lg border ${
-                          emailError ? 'border-red-300 animate-[shake_0.5s_ease-in-out]' : 'border-[#c7dbf4]'
+                          emailError
+                            ? 'border-red-300 animate-[shake_0.5s_ease-in-out]'
+                            : 'border-[#c7dbf4]'
                         } bg-transparent py-4 pl-6 pr-10 text-[#0b2c3d] outline-none focus:border-[#b31a1b] transition-all duration-300 hover:border-[#b31a1b]/50`}
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
                       />
                       {emailError && (
                         <div className="absolute -bottom-6 left-0 text-sm text-red-500 flex items-center gap-1 animate-[fadeIn_0.3s_ease-in-out]">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+                          <svg
+                            className="w-4 h-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                           {emailError}
                         </div>
@@ -253,29 +322,47 @@ const SignIn = ({ userType, setUserType }) => {
                         type={passToggle ? 'text' : 'password'}
                         placeholder="Enter your password"
                         className={`w-full rounded-lg border ${
-                          passwordError ? 'border-red-300 animate-[shake_0.5s_ease-in-out]' : 'border-[#c7dbf4]'
+                          passwordError
+                            ? 'border-red-300 animate-[shake_0.5s_ease-in-out]'
+                            : 'border-[#c7dbf4]'
                         } bg-transparent py-4 pl-6 pr-10 text-[#0b2c3d] outline-none focus:border-[#b31a1b] transition-all duration-300 hover:border-[#b31a1b]/50`}
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
                       />
                       {passwordError && (
                         <div className="absolute -bottom-6 left-0 text-sm text-red-500 flex items-center gap-1 animate-[fadeIn_0.3s_ease-in-out]">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+                          <svg
+                            className="w-4 h-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                           {passwordError}
                         </div>
                       )}
-                      
+
                       <button
                         type="button"
                         onClick={() => setPassToggle(!passToggle)}
                         className="absolute right-4 top-4 cursor-pointer transition-transform hover:scale-110"
                       >
                         {passToggle ? (
-                          <img src={EyeOpenIcon} alt="open" className="opacity-60 hover:opacity-100 transition-opacity" />
+                          <img
+                            src={EyeOpenIcon}
+                            alt="open"
+                            className="opacity-60 hover:opacity-100 transition-opacity"
+                          />
                         ) : (
-                          <img src={EyeCloseIcon} alt="close" className="opacity-60 hover:opacity-100 transition-opacity" />
+                          <img
+                            src={EyeCloseIcon}
+                            alt="close"
+                            className="opacity-60 hover:opacity-100 transition-opacity"
+                          />
                         )}
                       </button>
                     </div>
