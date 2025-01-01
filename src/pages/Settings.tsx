@@ -7,7 +7,6 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 
-
 interface EmployeeData {
   fullName: string;
   phoneNumber: string;
@@ -70,11 +69,11 @@ const Settings = () => {
                 employeeId: user.id // Include user.id as employeeId
               }),
             });
-            
+
             if (!createResponse.ok) {
               throw new Error('Failed to create employee info');
             }
-            
+
             const newData = await createResponse.json();
             setEmployeeData(newData.employee);
             setEmployeeId(newData.employee.id);
@@ -84,7 +83,7 @@ const Settings = () => {
         } else {
           const data = await response.json();
           const photoUrl = await getProfilePhotoUrl(data.id);
-          
+
           setEmployeeData({
             ...data,
             profilePhoto: photoUrl || undefined
@@ -93,7 +92,7 @@ const Settings = () => {
         }
       } catch (error) {
         console.error('Error fetching employee data:', error);
-        toast.error('Failed to load employee data');
+        toast('Please update your profile!');
       }
     };
 
@@ -127,7 +126,7 @@ const Settings = () => {
 
       setEmployeeData(data.employee);
       setEmployeeId(data.employee.id);
-      
+
       toast.success(employeeId ? 'Profile updated successfully' : 'Employee Information created successfully');
     } catch (error) {
       console.error('Error:', error);
@@ -166,13 +165,13 @@ const Settings = () => {
 
       // Fetch the updated photo URL
       const photoUrl = await getProfilePhotoUrl(employeeId);
-      
+
       if (photoUrl) {
         setEmployeeData(prev => ({
           ...prev,
           profilePhoto: photoUrl
         }));
-        
+
         setUser(prev => prev ? {
           ...prev,
           profilePhoto: photoUrl
@@ -207,7 +206,7 @@ const Settings = () => {
 
       // Update local state
       setEmployeeData(prev => ({ ...prev, profilePhoto: undefined }));
-      
+
       // Update user context
       setUser(prev => ({
         ...prev!,
@@ -527,10 +526,10 @@ const Settings = () => {
                           }}
                         />
                       ) : (
-                        <img 
-                          src={userThree} 
-                          alt="Default User" 
-                          className="h-full w-full object-cover rounded-full" 
+                        <img
+                          src={userThree}
+                          alt="Default User"
+                          className="h-full w-full object-cover rounded-full"
                         />
                       )}
                     </div>
