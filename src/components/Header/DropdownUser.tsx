@@ -2,15 +2,15 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import Arrow from '../../../public/assests/ArrowDown.svg'
-import ContactIcon from '../../../public/assests/SVGComponents/ContactIcon'
-import DashboardIcon from '../../../public/assests/SVGComponents/DashBoardIcon'
-import ColorableSvg from '../../hooks/ColorableSvg';
-import SettingSVGComponent from '../../../public/assests/SVGComponents/SettingIcon';
-import LogoutIconSVGComponent from '../../../public/assests/SVGComponents/LogoutIcon';
-import AddPropSVGComponent from '../../../public/assests/SVGComponents/AddPropertyIcon';
-import Logout from '../../Authentication/Logout';
+import ContactIcon from "../../../public/assests/SVGComponents/ContactIcon.tsx"
+import DashboardIcon from '../../../public/assests/SVGComponents/DashBoardIcon.tsx'
+import ColorableSvg from '../../hooks/ColorableSvg.tsx';
+import SettingSVGComponent from '../../../public/assests/SVGComponents/SettingIcon.tsx';
+import LogoutIconSVGComponent from '../../../public/assests/SVGComponents/LogoutIcon.tsx';
+import AddPropSVGComponent from '../../../public/assests/SVGComponents/AddPropertyIcon.tsx';
+import Logout from "../../Authentication/Logout.tsx"
 import { useAuth } from '../../context/AuthContext';
-import api from "../../hooks/useApi";
+import { api} from "../../hooks/api"
 
 
 const DropdownUser = () => {
@@ -35,7 +35,6 @@ const DropdownUser = () => {
       const blob = await response.blob();
       return URL.createObjectURL(blob);
     } catch (error) {
-      console.error('Error fetching profile photo:', error);
       return null;
     }
   };
@@ -106,7 +105,7 @@ const DropdownUser = () => {
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-[#af0808] lg:text-base"
             >
               <ColorableSvg color="blue" width={24} height={24}>
-                <DashboardIcon color={pathname === ('/dashboard') && '#af0808'} />
+                <DashboardIcon color={pathname === '/dashboard' ? '#af0808' : undefined} />
               </ColorableSvg>
               Dashboard
             </Link>
@@ -119,7 +118,7 @@ const DropdownUser = () => {
                   className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-[#af0808] lg:text-base"
                 >
                   <ColorableSvg color="blue" width={24} height={24}>
-                    <ContactIcon color={pathname === ('/contactpage') && '#af0808'} />
+                    <ContactIcon color={pathname === '/contactpage' ? '#af0808' : undefined} />
                   </ColorableSvg>
                   Contact Messages
                 </Link>
@@ -135,7 +134,7 @@ const DropdownUser = () => {
                 className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-[#af0808] lg:text-base"
               >
                 <ColorableSvg color="blue" width={24} height={24}>
-                  <SettingSVGComponent color={pathname.includes('settings') && '#af0808'} />
+                  <SettingSVGComponent color={pathname.includes('settings') ? '#af0808' : undefined} />
                 </ColorableSvg>
                 Account Settings
               </Link>
@@ -148,7 +147,7 @@ const DropdownUser = () => {
                 className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-[#af0808] lg:text-base"
               >
                 <ColorableSvg color="blue" width={24} height={24}>
-                  <AddPropSVGComponent color={pathname.includes('properties') && '#af0808'} />
+                  <AddPropSVGComponent color={pathname.includes('properties') ? '#af0808' : undefined} />
                 </ColorableSvg>
                 Add Property
               </Link>

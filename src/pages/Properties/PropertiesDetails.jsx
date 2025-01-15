@@ -36,10 +36,21 @@ function PropertiesDetails({
   const downloadPDF = async () => {
     const input = pdfRef.current;
     try {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = getImageUrl();
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
       const canvas = await html2canvas(input, {
         useCORS: true,
         allowTaint: true,
         scale: 2, // Increase quality
+        logging: true, // Help debug any issues
+        imageTimeout: 0, // Remove timeout for image loading
       });
 
       const imgData = canvas.toDataURL('image/png', 1.0);
@@ -61,7 +72,9 @@ function PropertiesDetails({
         imgHeight * ratio,
       );
       pdf.save('property-details.pdf');
-    } catch (error) {}
+    } catch (error) {
+      // You might want to show an error message to the user here
+    }
   };
 
   if (!property) {
@@ -103,7 +116,10 @@ function PropertiesDetails({
                 <div className="space-y-2 md:space-y-3">
                   <div className="flex items-center text-gray-600">
                     <span className="text-sm md:text-base">
-                      {property.location}
+                      Location:{' '}
+                      {property.location ||
+                        property.address ||
+                        'Address not available'}
                     </span>
                   </div>
                   <div className="flex items-center text-gray-600">
@@ -147,7 +163,7 @@ function PropertiesDetails({
               <hr className="w-[55%] border-[#af0808]" />
               <div className="text-center space-y-1 md:space-y-2">
                 <h3 className="font-bold text-lg md:text-xl text-gray-800 mb-2 md:mb-4">
-                  Real Estate Company Name
+                  Real Estate Consultant
                 </h3>
                 <p className="text-sm md:text-base text-gray-600">
                   123 Business Street, Sector 1 New Delhi, India - 110001

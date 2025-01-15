@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
-import api from "../hooks/useApi";
+import api from "../hooks/api";
 
 
 
@@ -50,7 +50,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
             });
         } catch (error) {
-            console.error('Logout error:', error);
             throw error; // Propagate error to handle in component
         }
     };

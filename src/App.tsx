@@ -1,30 +1,28 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
-import Loader from "./common/Loader/Loader"
+import Loader from "./common/Loader/Loader.jsx"
 import PageTitle from './components/PageTitle';
 import Calendar from './pages/Calendar';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import DefaultLayout from './layout/DefaultLayout';
-import ContactMessages from './pages/Dashboard/ContactMessages';
+import ContactMessages from './pages/Dashboard/ContactMessages.jsx';
 import ECommerce from './pages/Dashboard/ECommerce';
-import AddProperties from './pages/Properties/AddProperties';
+import AddProperties from './pages/Properties/AddProperties.jsx';
 import '../public/Styles/Global.css'
-import UpdateContent from './pages/UpdateContent/UpdateContent';
-import UpdateLocation from './pages/UpdateContent/UpdateLocation/UpdateLocation';
-import UpdateAboutUsPage from './pages/UpdateContent/UpdateAboutUsPage/UpdateAboutUsPage';
-import UpdateHeroSection from './pages/UpdateContent/UpdateHeroSectionCarousel/UpdateHeroSection';
-import SignIn from './Authentication/SignIn';
+import UpdateContent from './pages/UpdateContent/UpdateContent.jsx';
+import UpdateLocation from './pages/UpdateContent/UpdateLocation/UpdateLocation.jsx';
+import UpdateAboutUsPage from './pages/UpdateContent/UpdateAboutUsPage/UpdateAboutUsPage.jsx';
+import UpdateHeroSection from './pages/UpdateContent/UpdateHeroSectionCarousel/UpdateHeroSection.jsx';
+import SignIn from './Authentication/SignIn.jsx';
 // import SignUp from './Authentication/SignUp';
-import AddEmployees from './pages/UpdateContent/AddEmployees';
-import Logout from './Authentication/Logout';
-import PropertiesDetails from './pages/Properties/PropertiesDetails';
-import PropertyCardComp from './components/PropertyCardComp';
-import Notifications from './pages/UpdateContent/NotificationsPage/Notifications';
-import QRCodeGenerator from './components/QRCodeGenerator';
-import ResetPassword from './Authentication/ResetPassword';
-import SetNewPassword from './Authentication/setNewPassword';
-import axios from 'axios';
+import AddEmployees from './pages/UpdateContent/AddEmployees.jsx';
+import Logout from './Authentication/Logout.jsx';
+import PropertiesDetails from './pages/Properties/PropertiesDetails.jsx';
+import PropertyCardComp from './components/PropertyCardComp.jsx';
+import Notifications from './pages/UpdateContent/NotificationsPage/Notifications.jsx';
+import ResetPassword from './Authentication/ResetPassword.jsx';
+import SetNewPassword from './Authentication/setNewPassword.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

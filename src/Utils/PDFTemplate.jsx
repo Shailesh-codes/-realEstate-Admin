@@ -97,7 +97,7 @@ function PDFTemplate({PDFIsOpen, setPDFIsOpen, property}) {
           <div className="bg-gray-50 p-4 md:p-8 rounded-xl flex flex-col items-center justify-center gap-7">
             <hr className='w-[55%] border-[#af0808]'  />
             <div className="text-center space-y-1 md:space-y-2">
-              <h3 className="font-bold text-lg md:text-xl text-gray-800 mb-2 md:mb-4">Real Estate Company Name</h3>
+              <h3 className="font-bold text-lg md:text-xl text-gray-800 mb-2 md:mb-4">Real Estate Consultant</h3>
               <p className="text-sm md:text-base text-gray-600">123 Business Street, Sector 1 New Delhi, India - 110001</p>
               {/* <p className="text-sm md:text-base text-gray-600"></p> */}
               <p className="text-sm md:text-base text-gray-600">Phone: +91 98765 43210   |    Email: contact@realestate.com</p>

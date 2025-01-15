@@ -1,5 +1,14 @@
 // ColorableSvg.jsx
-import React from 'react';
+import React, { ReactElement, ReactNode } from 'react';
+
+interface ColorableSvgProps {
+  children: ReactNode;
+  color?: string;
+  width?: number | string;
+  height?: number | string;
+  className?: string;
+  [key: string]: any; // for additional props
+}
 
 const ColorableSvg = ({
   children,
@@ -8,8 +17,8 @@ const ColorableSvg = ({
   height,
   className = '',
   ...props
-}) => {
-  const modifySvgChildren = (element) => {
+}: ColorableSvgProps) => {
+  const modifySvgChildren = (element: ReactNode): ReactNode => {
     if (!React.isValidElement(element)) {
       return element;
     }
@@ -27,13 +36,13 @@ const ColorableSvg = ({
       newProps.children = React.Children.map(newProps.children, modifySvgChildren);
     }
 
-    return React.cloneElement(element, newProps);
+    return React.cloneElement(element as ReactElement, newProps);
   };
 
-  const svgElement = React.Children.only(children);
+  const svgElement = React.Children.only(children) as ReactElement;
   
   const modifiedSvg = React.cloneElement(
-    modifySvgChildren(svgElement),
+    modifySvgChildren(svgElement) as ReactElement,
     {
       ...props,
       className,

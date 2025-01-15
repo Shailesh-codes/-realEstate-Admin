@@ -2,9 +2,23 @@ import React from 'react';
 import { BsFillTrashFill, BsFillPencilFill } from 'react-icons/bs';
 import dataJSON from '../../public/data.json';
 
-export const Table = ({ rows, deleteRow, editRow }) => {
+interface Row {
+  id: string;
+  para: string;
+  criterion: number;
+  value: string;
+  type: number;
+}
+
+interface TableProps {
+  rows: Row[];
+  deleteRow: (index: number) => void;
+  editRow: (index: number) => void;
+}
+
+export const Table: React.FC<TableProps> = ({ rows, deleteRow, editRow }) => {
   const fields = Object.keys(Object.values(dataJSON)[0]).filter(
-    (item: any) => !item.startsWith('delta_'),
+    (item) => !item.startsWith('delta_'),
   );
 
   return (
@@ -16,7 +30,7 @@ export const Table = ({ rows, deleteRow, editRow }) => {
               Bond
             </th>
             <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
-              Paramter
+              Parameter
             </th>
             <th className="py-4 px-4 font-medium text-black dark:text-white">
               Criterion
@@ -33,7 +47,7 @@ export const Table = ({ rows, deleteRow, editRow }) => {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row: any, idx: number) => {
+          {rows.map((row, idx) => {
             return (
               <tr key={idx} className="content-center">
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
@@ -45,13 +59,13 @@ export const Table = ({ rows, deleteRow, editRow }) => {
 
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <span>
-                    {row.criterion == 0
+                    {row.criterion === 0
                       ? 'goes down by'
-                      : row.criterion == 1
+                      : row.criterion === 1
                       ? 'goes up by'
-                      : row.criterion == 2
+                      : row.criterion === 2
                       ? 'is smaller than'
-                      : row.criterion == 3
+                      : row.criterion === 3
                       ? 'is greater than'
                       : 'is equal to'}
                   </span>
@@ -61,9 +75,9 @@ export const Table = ({ rows, deleteRow, editRow }) => {
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <span>
-                    {row.type == 0
+                    {row.type === 0
                       ? 'Info'
-                      : row.type == 1
+                      : row.type === 1
                       ? 'Warning'
                       : 'Alert'}
                   </span>

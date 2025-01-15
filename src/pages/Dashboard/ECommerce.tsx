@@ -7,7 +7,7 @@ import { LineChart, Line, PieChart, Pie, Cell, Legend } from 'recharts';
 import { useAuth } from "../../context/AuthContext";
 import { UserGroupIcon, UserIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
-import api from "../../hooks/useApi";
+import api from "../../hooks/api";
 
 const COLORS = ['#4be7a3', '#f2b854', '#54cbf2'];
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import ColorableSvg from '../hooks/ColorableSvg';
+import ColorableSvg from '../hooks/ColorableSvg.tsx';
 import DeleteIconSVGComponent from '../../public/assests/SVGComponents/deleteIcon'; 
 
 const DeletePopup = ({ isOpen, onClose, onDelete, itemName }) => {
